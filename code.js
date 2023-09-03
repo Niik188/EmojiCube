@@ -32,7 +32,8 @@ function setup() {
 
     gun = new Sprite()
     gun.textSize = 32
-    gun.img = './img/gun.png';
+    // gun.img = './img/gun.png';
+    gun.text = '🔫ㅤㅤ'
     gun.collider = 'n'
     gun.w = 0
     gun.h = 0
@@ -184,7 +185,18 @@ function setup() {
         gun.visible = false
     }
     map_create()
-}    
+    if (getRandomInt(0,10) <= 3) {
+        document.title = '🥵EmojiCube😋'
+        player.text = '😳'
+    }
+    // else if (getRandomInt(0,10) <= 6) {
+    //     document.title = '♂️EmojiBilly♂️'
+    //     player.text = '️󠁨👨'
+    //     player.mirror.y = 1
+    // }
+}   
+
+
 
 //До загрузки
 function preload() {
@@ -250,8 +262,10 @@ function draw() {
     }
     //Отражать оружие, когда x мыши меньше x игрока
     if (player.x<mouse.x) {
+        gun.mirror.x = true;
         gun.mirror.y = false;
     }else{
+        gun.mirror.x = true;
         gun.mirror.y = true;
     }
     
@@ -475,7 +489,7 @@ function draw() {
 
     for (let i = 0; i < robots_fly.length; i++) {
         let distance = dist(player.x, player.y, robots_fly[i].x, robots_fly[i].y)
-        if(distance < 60){
+        if(distance < 70){
             player.text = '😱'
             setTimeout(() => {
                 player.text = '😐'
@@ -485,7 +499,7 @@ function draw() {
             setTimeout(() => {
                 player.text = '😐'
             }, 500);
-        }else if(distance < 100){
+        }else if(distance < 150){
             player.text = '😟'
             setTimeout(() => {
                 player.text = '😐'

@@ -11,12 +11,11 @@
         "random_level_after_die":true,
         "fall_spawn":true,
         "player_ball":false,
-        "gun_enable":false,
+        "gun_enable":true,
         "one_level":false,
         "levels":[{
             "rotationLock": false,
             "light":false,
-            "gun_enable":true,
             "tile":[
                 ".",
                 "..........@....",
