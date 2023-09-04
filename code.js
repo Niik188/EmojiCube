@@ -1,5 +1,4 @@
 let player,spawn;
-let c;
 let tiles;
 let json;
 let win_next = false;
@@ -7,20 +6,17 @@ let difficulty;
 let map;
 let number_level = 0, random_level = 0;
 let dark1;
-let rain;
 let dark;
 let light;
 let font;
 let alphabet = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.split(''),
     ALPHABET = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.toUpperCase().split('');
-let god_mode = false;
-let pauseGame = false
-let date;
-let scoreDeaths = 0;
+let god_mode = false,pauseGame = false;
+let scoreDeaths = 0,date;
 
 //Запуск
 function setup() {
-    createCanvas(1000, 1000);
+    createCanvas(window.innerWidth-4,window.innerHeight-4);
     world.gravity.y = 10;
     player = new Sprite()
     player.health = 100
@@ -32,7 +28,6 @@ function setup() {
 
     gun = new Sprite()
     gun.textSize = 32
-    // gun.img = './img/gun.png';
     gun.text = '🔫ㅤㅤ'
     gun.collider = 'n'
     gun.w = 0
@@ -144,12 +139,30 @@ function setup() {
     fall = new tiles.Group();
     fall.collider = 's';
     fall.color = 'black';
-	fall.tile = '!';
+	fall.tile = '-';
 
     trap = new tiles.Group();
     trap.collider = 's';
     trap.color = 'black';
 	trap.tile = '1';
+
+    laser_traps = new tiles.Group()
+    laser_traps.active = true
+    laser_traps.collider = 's'
+    laser_traps.color = 'black';
+	laser_traps.tile = '!';
+
+    lasers = new Group()
+    lasers.collider = 'k'
+    lasers.color = 'red'
+    lasers.stroke = 'red'
+
+    button = new tiles.Group()
+    button.collider = 's'
+    button.textSize = 32
+    button.text = '🕹️'
+    button.diameter = 20
+    button.tile = '#'
 
     fake = new tiles.Group();
     fake.collider = 'n';
@@ -157,7 +170,7 @@ function setup() {
     fake.stroke = 'gray';
 	fake.w = 50;
 	fake.h = 50;
-	fake.tile = '-';
+	fake.tile = '_';
 
     win = new tiles.Group();
     win.collider = 'd';
@@ -204,7 +217,6 @@ function preload() {
     dark = loadImage('./img/dark.png');
     //background(canvas.toDataURL())
     light = loadImage('./img/light.png');
-    rain = loadGif('./img/g_rain2_900.gif');
     font = loadFont("./fonts/typewriter.ttf");
 }
 
@@ -244,7 +256,6 @@ async function move_ultra_robot_fly() {
 
 //Рендер
 function draw() {
-    // resizeCanvas(window.innerWidth,window.innerHeight);
     background(map[0].background)
     gun.x = player.x; gun.y = player.y
     gun.rotateTowards(mouse, 0.1, 0);
@@ -292,6 +303,13 @@ function draw() {
         allSprites.debug = true
         player.collider = 'n'
     }
+    //Use
+    if (kb.presses('e')&&player.colliding(button)) {
+        console.log("PLAYER USED BUTTON")
+        laser_traps.forEach(laser_trap => {
+            laser_trap.active = false
+        });
+    }
     //Restart
     if (kb.presses('r')) {
         player.rotation = 0
@@ -312,7 +330,7 @@ function draw() {
     }
 
     //При косания игрока к шипам, летающим или просто роботов. При условии, что игрок не прошёл уровень
-    if ((player.collides(spike)||player.collides(robots)||player.collides(robots_fly))&&!win_next) {
+    if ((player.collides(spike)||player.collides(lasers)||player.collides(robots)||player.collides(robots_fly))&&!win_next) {
         let skeleton = new Sprite(player.x, player.y)
         skeleton.collider = 'd'
         skeleton.color = 'white';
@@ -482,13 +500,14 @@ function draw() {
     pop()
 
     dark1.layer = 2;
+    camera.zoom = (canvas.w /canvas.h) -0.5
     camera.x = 350;
     if (map[0].camera_player&&player.x >= canvas.w/3.5) {
         camera.x = player.x
     }
 
-    for (let i = 0; i < robots_fly.length; i++) {
-        let distance = dist(player.x, player.y, robots_fly[i].x, robots_fly[i].y)
+    robots_fly.forEach(robot => {
+        let distance = dist(player.x, player.y, robot.x, robot.y)
         if(distance < 70){
             player.text = '😱'
             setTimeout(() => {
@@ -505,7 +524,20 @@ function draw() {
                 player.text = '😐'
             }, 500);
         }
-    }
+    });
+
+    laser_traps.forEach(laser_trap => {
+        if (laser_trap.active) {
+            let laser = new lasers.Sprite()
+            laser.direction = -90
+            laser.speed = 10
+            laser.life = 40
+            laser.x = laser_trap.x
+            laser.y = laser_trap.y-laser_trap.w-1
+            laser.w = 1
+            
+        }
+    });
 }
 
 //Zoom в бит
@@ -642,7 +674,6 @@ function map_create() {
         win.h = 10
         win.collider = 's'
     }
-    npcTiles(map[0].levels[random_level].tile)
     new Tiles(map[0].levels[random_level].tile, 0, 350, blocks.w-2, blocks.h-2);
     if (map[0].levels[random_level].gun_enable!=undefined) {
         gun.visible = map[0].levels[random_level].gun_enable
@@ -667,18 +698,4 @@ function map_create() {
     //     alert(error)
     //     location.reload();
     // }
-}
-
-function npcTiles(tiles) {
-    let count = 0
-    console.log(tiles.length)
-    for (let y = 0; y < tiles.length; y++) {
-        for (let x = 0; x < tiles[y].length; x++) {
-            if (tiles[y][x] == '=') {
-                count++
-                
-            }
-        }
-    }
-    console.log(count)
 }
