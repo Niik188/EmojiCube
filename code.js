@@ -354,7 +354,7 @@ function draw() {
     }
 
     //При косания игрока к шипам, летающим или просто роботов. При условии, что игрок не прошёл уровень
-    if ((player.collides(spike)||player.collides(lasers)||player.collides(robots)||player.collides(robots_fly))&&player.visible&&!win_next) {
+    if ((player.collides(spike)||player.overlaps(lasers)||player.collides(robots)||player.collides(robots_fly))&&player.visible&&!win_next) {
         let skeleton = new objects.Sprite(player.x, player.y)
         skeleton.collider = 'd'
         skeleton.color = 'white';
@@ -515,6 +515,16 @@ function draw() {
         setTimeout(() => {
             speed1.text = '◀️'
         }, 200);
+    })
+
+    //При косания куба лазера
+    cubes.overlaps(lasers,(cube,laser)=>{
+        cube.drag = 10;
+        cube.text = '🈲'
+        cube.collider = 'd'
+        setTimeout(() => {
+            cube.remove()
+        }, 600);
     })
 
     //При косания объекта на прыгующий блок
