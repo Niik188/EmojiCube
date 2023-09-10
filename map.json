@@ -1,10 +1,9 @@
 {
-    "info":["easy","normal","hard","extreme","anomaly"],
+    "info":["boss","easy","normal","hard","extreme","anomaly"],
     "easy":[{
         "title":"Easy",
         "tick": false,
         "background": [225,225,225,120],
-        "spawn_position":{"x":10,"y":0},
         "light": true,
         "gun_of_win":false,
         "random_level":true,
@@ -16,11 +15,11 @@
         "levels":[{
             "rotationLock": false,
             "tile":[
-                ".",
-                ".",
-                ".....,.......,..",
-                "{..,.>..#....+.]",
-                "==========!===!="
+                "",
+                "",
+                "",
+                "{..............]",
+                "================"
             ]
             },
             {
@@ -52,7 +51,6 @@
     "normal":[{
         "title":"Normal",
         "background": [255,255,255,120],
-        "spawn_position":{"x":0,"y":450},
         "fall_spawn":true,
         "light": true,
         "random_level_after_die":false,
@@ -103,7 +101,6 @@
     "hard":[{
         "title":"Hard",
         "background": [155,155,155,55],
-        "spawn_position":{"x":0,"y":500},
         "fall_spawn":true,
         "player_ball":false,
         "gun_enable":false,
@@ -164,7 +161,6 @@
     "extreme":[{
         "title":"Extreme",
         "background": [155,155,155,55],
-        "spawn_position":{"x":50,"y":500},
         "fall_spawn":false,
         "light": true,
         "player_ball":false,
@@ -189,7 +185,7 @@
                 "|{............=]=",
                 "|====?=====?--==="
             ]},
-            {"spawn_position":{"x":500,"y":200}, "tile":[
+            {"tile":[
                 "?????????.....|?????",
                 "............{.|",
                 "..............|",
@@ -201,10 +197,36 @@
             ]}
         ]
     }],
+    "boss":[{
+        "title":"BOSS",
+        "background": [55,55,55,55],
+        "fall_spawn":false,
+        "light": true,
+        "player_ball":false,
+        "gun_of_win":false,
+        "random_level":false,
+        "random_level_after_die":true,
+        "next_level_after_fall":true,
+        "gun_enable":true,
+        "one_level":true,
+        "levels":[{"tile":[
+            "|................|",
+            "|........1.......|",
+            "|................|",
+            "|................|",
+            "|{..............{|",
+            "=================="
+            ],
+            "color":{
+                "blocks":"black",
+                "walls":"black"
+            }
+        }
+        ]
+    }],
     "anomaly":[{
         "title":"no data",
         "background": [155,80,80,85],
-        "spawn_position":{"x":50,"y":500},
         "fall_spawn":false,
         "camera_player":true,
         "light": true,
@@ -223,7 +245,7 @@
             "={..............|..",
             "=====?===?==----...."
             ]},
-            {"spawn_position":{"x":700,"y":200}, "tile":[
+            {"tile":[
                 "|...............|",
                 "|..............{|!",
                 "|.............===",
@@ -261,7 +283,6 @@
         "player_ball":true,
         "one_level":false,
         "fall_spawn":false,
-        "spawn_position":{"x":0,"y":500},
         "levels":[
             {"light": true,
             "tile":[
