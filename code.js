@@ -3,7 +3,7 @@ let tiles;
 let json;
 let win_next = false, slowmotion = false;
 let difficulty;
-let map, backgroundMap;
+let map = [], backgroundMap;
 let number_level = 0, random_level = 0;
 let dark1;
 let dark;
@@ -13,6 +13,11 @@ let alphabet = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапро
     ALPHABET = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.toUpperCase().split('');
 let god_mode = false,pauseGame = false;
 let scoreDeaths = 0,date;
+let boss_arm;
+let commandsGame = {
+    stage: ""
+};
+let consoleActive = false;
 
 //Запуск
 function setup() {
@@ -37,8 +42,8 @@ function setup() {
     gun.layer = 0;
 
     bullets = new Group()
-    bullets.stroke = "blue"
-    bullets.color = "blue"
+    bullets.stroke = "rgb(199,219,255)"
+    bullets.color = "rgb(199,219,255)"
     bullets.collider = 'd'
     bullets.diameter = 5
     bullets.life = 30
@@ -58,12 +63,19 @@ function setup() {
     spawns.visible = false
     spawns.tile = '{'
     
+    emoji = new tiles.Group()
+    emoji.collider = 'n'
+    emoji.diameter = 0
+    emoji.textSize = 32
+    emoji.text = '📝'
+    emoji.tile = '~'
+
     alphabet.forEach(letter => {
         let lettero = new tiles.Group();
         lettero.debug = true
         lettero.collider = 's';
-        lettero.color = 'white';
-        lettero.stroke = 'white';
+        lettero.color = `rgba(0,0,0,0)`;
+        lettero.stroke = `rgba(0,0,0,0)`;
         lettero.w = 20;
 	    lettero.h = 20;
         lettero.textSize = 40;
@@ -81,8 +93,8 @@ function setup() {
         let lettero = new tiles.Group();
         lettero.debug = true
         lettero.collider = 's';
-        lettero.color = 'white';
-        lettero.stroke = 'white';
+        lettero.color = `rgba(0,0,0,0)`;
+        lettero.stroke = `rgba(0,0,0,0)`;
         lettero.w = 35;
 	    lettero.h = 25;
         lettero.textSize = 35;
@@ -152,6 +164,8 @@ function setup() {
     boss.text = '😈'
     boss.tile = '1'
     boss_1()
+    
+    boss_arm = new spike.Group()
 
     robots = new objects.Group();
     robots.collider = 'd';
@@ -185,7 +199,7 @@ function setup() {
     trap = new tiles.Group();
     trap.collider = 's';
     trap.color = blocks.color
-	trap.tile = '1';
+	trap.tile = "'";
 
     laser_traps = new tiles.Group()
     laser_traps.active = true
@@ -289,6 +303,15 @@ async function move_ultra_robot_fly() {
 
 //Рендер
 function draw() {
+    if (commandsGame.stage!="") {
+        consoleActive = true
+        map = commandsGame.stage
+        if (!map.random_level) {
+            number_level = random_level = 0
+        }
+        map_create()
+        commandsGame.stage=""
+    }
     background(backgroundMap)
     gun.x = player.x; gun.y = player.y
     gun.rotateTowards(mouse, 0.1, 0);
@@ -385,6 +408,9 @@ function draw() {
         gun_weapon.layer = 1;
         gun_weapon.diameter = 10
         gun_weapon.life = 130;
+        if (boss[0] != undefined) {
+            boss[0].text = '👹'
+        }
         if (map.levels[random_level].gun_enable!=undefined){
             gun_weapon.visible = map.levels[random_level].gun_enable
         }else{
@@ -395,13 +421,17 @@ function draw() {
         gun.visible = false
         slowmotion = true
         setTimeout(() => {
-        scoreDeaths++
+            if(map.enable_scoreDeath){
+                scoreDeaths++
+            }else if (map.enable_scoreDeath==undefined){
+                scoreDeaths++
+            }
         player.sleeping = true;
         player.visible = true
         player.rotation = 0
         slowmotion = false
         if (map.random_level_after_die) {map_create(false, 'spike')}
-        map_create(true, 'spike')
+        else{map_create(true, 'spike')}
         }, 2000);
 	}
 
@@ -416,7 +446,7 @@ function draw() {
         }
         if (map.random_level_after_die) {map_create(false, 'fall')}
         map_create(true, 'fall')
-        if (!map.random_level_after_die) {
+        if (!map.random_level_after_die||map.enable_scoreDeath) {
             scoreDeaths++
         }
 		setTimeout(() => {
@@ -582,9 +612,11 @@ function draw() {
 	    win.h = 1;
         setTimeout(() => {
             player.text = '😐'
-            
+            if(json.info[difficulty] == 'boss'){
+                player.text = '🙁'
+            }
             if(map.one_level == true) {
-                map.levels.splice(0, map[0].levels.length);
+                map.levels.splice(0, map.levels.length);
             }else{
                 map.levels.splice(number_level, 1)
             }
@@ -594,8 +626,7 @@ function draw() {
             win.w = 50;
 	        win.h = 50;
             win_next = slowmotion = false
-            
-            map_create()
+            map_create(false)
             player.rotation = 0
         }, 1000);
 	}
@@ -605,7 +636,13 @@ function draw() {
     }
 
     if (win_next) {
-        background(0,255,0, 10)
+        if(json.info[difficulty] == 'boss'){
+            background(0,0,0, 255)
+            player.text = '😰'
+        }else{
+            background(0,255,0, 10)
+        }
+        
     }
 
     //При косания пуль к роботам
@@ -621,7 +658,12 @@ function draw() {
     fill(255, 255, 255);
     date = new Date();
     try {
-      text(map.title + " " + map.levels.length + " Deaths: " + scoreDeaths, 10, 20)
+      
+        if (map.levels.length<=1) {
+            text(map.title + " Deaths: " + scoreDeaths, 10, 20)
+        }else{
+            text(map.title + " " + map.levels.length + " Deaths: " + scoreDeaths, 10, 20)
+        }
       text(date.toLocaleTimeString() + " " + date.toLocaleDateString(), 10, 40)
       if (boss.length!=0) {
         fill(255, 255, 255);
@@ -646,6 +688,26 @@ function draw() {
 
     robots_fly.forEach(robot => {
         let distance = dist(player.x, player.y, robot.x, robot.y)
+        if(distance < 70){
+            player.text = '😱'
+            setTimeout(() => {
+                player.text = '😐'
+            }, 500);
+        }else if(distance < 80){
+            player.text = '😨'
+            setTimeout(() => {
+                player.text = '😐'
+            }, 500);
+        }else if(distance < 150){
+            player.text = '😟'
+            setTimeout(() => {
+                player.text = '😐'
+            }, 500);
+        }
+    });
+
+    boss_arm.forEach(arm => {
+        let distance = dist(player.x, player.y, arm.x, arm.y)
         if(distance < 70){
             player.text = '😱'
             setTimeout(() => {
@@ -704,22 +766,25 @@ function draw() {
 
 //Движение boss
 async function boss_1() {
-    await boss.moveTo(100, 200, 5);
-	await delay(50);
-	await boss.moveTo(750, 200, 5);
-    await delay(50);
+    await boss.moveTo(100, 200, 8);
+	await delay(30);
+	await boss.moveTo(750, 200, 8);
+    await delay(30);
     boss_1()
 }
 
 //Движение boss_arm
 async function boss_arm_1(arm1) {
     if (boss[0] != undefined) {
-        await arm1.moveTo(boss[0].x-random(-250,250), boss[0].y, 5);
+        await arm1.moveTo(boss[0].x-random(-250,250), boss[0].y, 25);
+	    await delay(scoreDeaths*100+200);
+        await arm1.rotateTo(player, 10, 0);
+	    await arm1.moveTo(player.x, player.y, 20-(boss[0].health+30)/8);
+        await delay(50);
     }
-	await delay(50);
-	await arm1.moveTo(player.x, player.y, 5);
-    await delay(50);
-    boss_arm_1(arm1)
+    if (boss[0] != undefined) {
+        boss_arm_1(arm1)
+    }
 }
 
 //Zoom в бит
@@ -761,11 +826,19 @@ function hit(bullet, robot) {
 }
 
 function hit_boss(bullet, boss1) {
-    boss1.text = '🤬'
+    boss1.text = '🥶'
     setTimeout(() => {
         boss1.text = '😈'
     }, 200);
-	boss1.health -= 10
+	boss1.health -= 5
+    if (boss1.health < 20) {
+        die1 = new die.Sprite(random(100,750),boss1.y-30)
+        die1.collider = 'd'
+        die1.textSize = 32
+        die1.text = '🔮'
+        die1.diameter =20
+        die1.life = 100
+    }
     if (boss1.health <= 0) {
         let explosion = new Sprite(boss1.x,boss1.y)
         explosion.collider = 'n'
@@ -788,7 +861,10 @@ function hit_boss(bullet, boss1) {
             del.x = boss1.x + random(-60,60)
             del.y = boss1.y + random(-60,60)
         }
-        new win.Sprite(boss1.x,boss1.y)
+        if (detals != undefined) {
+            new win.Sprite(boss1.x,boss1.y+150)
+        }
+        boss_arm.remove()
         boss1.remove()
     }
     bullet.remove()
@@ -860,18 +936,27 @@ function map_create(restart_level, death) {
     tiles.removeAll()
     objects.removeAll()
     if (map.levels.length == 0) {
-        difficulty+=1
-        map = json[json.info[difficulty]][0]
-        if (!map.random_level) {
-            number_level = random_level = 0
+        if (!consoleActive) {
+            difficulty+=1
+        }else{
+            difficulty=0
         }
+        consoleActive = false
+        map = json[json.info[difficulty]][0]
+        // if ((!map.random_level||map.begin_level)&&(map.random_level!=undefined||map.begin_level!=undefined)) { 
+        //     number_level = random_level = 0
+        // }
+        // json = loadJSON('./map.json');
     }
-    if (map.random_level&&!restart_level) {
+    if ((map.random_level||map.random_level==undefined)&&(!restart_level&&!map.begin_level)) {
         random_level = getRandomInt(0,map.levels.length)
             while (random_level == number_level&&map.levels.length != 1) {
                 random_level = getRandomInt(0,map.levels.length)
             }
         number_level = random_level
+    }
+    if (map.levels[random_level] == map.levels[0]) {
+        map.begin_level = false
     }
     player.rotationLock = map.levels[random_level].rotationLock;
     if (map.player_ball) {
@@ -883,13 +968,22 @@ function map_create(restart_level, death) {
         win.h = 10
         win.collider = 's'
     }
-    new Tiles(map.levels[random_level].tile, 0, 350, tiles.w, tiles.h);
+    if (map.levels[random_level].tile_position!=undefined) {
+        new Tiles(map.levels[random_level].tile, map.levels[random_level].tile_position.x, map.levels[random_level].tile_position.y, tiles.w, tiles.h);
+    }else{
+        new Tiles(map.levels[random_level].tile, 0, 350, tiles.w, tiles.h);
+    }
+    for (let i = 0; i < emoji.length; i++) {
+        if (map.levels[random_level].emoji[i]!=undefined) {
+            emoji[i].text = map.levels[random_level].emoji[i]
+        }
+    }
     if (boss.length!=0) {
-        boss_arm = new spike.Group()
-        for (let i = 0; i < 2; i++) {
-            arm = new boss_arm.Sprite()
-            arm.collider = 'k'
-            arm.diameter = 20
+        setTimeout(() => {
+            for (let i = 0; i < scoreDeaths+2; i++) {
+                arm = new boss_arm.Sprite()
+                arm.collider = 'k'
+                arm.diameter = 20
             if (i == 0) {
                 arm.x = boss[0].x-150
                 arm.y = boss[0].y
@@ -898,10 +992,19 @@ function map_create(restart_level, death) {
                 arm.x = boss[0].x+150
                 arm.y = boss[0].y
             }
+            if (i == 2) {
+                arm.x = boss[0].x
+                arm.y = boss[0].y
+            }
+            if(i>2){
+                arm.life = (scoreDeaths*50)+(i*2)
+            }
             arm.textSize = 72
-            arm.text = '✂️'
+            arm.text = '🤜'
             boss_arm_1(arm)
-        }
+            }
+        }, 500);
+        
     }
     blocks.color = blocks.stroke = 'black'
     wall.color = wall.stroke = 'gray'
