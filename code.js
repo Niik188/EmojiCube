@@ -943,10 +943,10 @@ function map_create(restart_level, death) {
         }
         consoleActive = false
         map = json[json.info[difficulty]][0]
-        // if ((!map.random_level||map.begin_level)&&(map.random_level!=undefined||map.begin_level!=undefined)) { 
-        //     number_level = random_level = 0
-        // }
-        // json = loadJSON('./map.json');
+        if ((!map.random_level||map.begin_level)&&(map.random_level!=undefined||map.begin_level!=undefined)) { 
+            number_level = random_level = 0
+        }
+        json = loadJSON('./map.json');
     }
     if ((map.random_level||map.random_level==undefined)&&(!restart_level&&!map.begin_level)) {
         random_level = getRandomInt(0,map.levels.length)
