@@ -1,9 +1,9 @@
-let player,spawn;
+let player, player_spawn = {active:false,x:0,y:0};
 let tiles;
 let json;
 let win_next = false, slowmotion = false;
 let difficulty;
-let map = [], backgroundMap;
+let map = [], backgroundMap,fall_barrier_save;
 let number_level = 0, random_level = 0;
 let dark1;
 let dark;
@@ -21,7 +21,7 @@ let consoleActive = false;
 
 //Запуск
 function setup() {
-    createCanvas(window.innerWidth-4,window.innerHeight-4);
+    createCanvas('1:2','fullscreen');
     world.gravity.y = 10;
     player = new Sprite()
     player.health = 100
@@ -195,6 +195,11 @@ function setup() {
     fall.collider = 's';
     fall.color = blocks.color
 	fall.tile = '-';
+
+    fall_barrier = new tiles.Group();
+    fall_barrier.collider = 'n';
+    fall_barrier.d = 0
+	fall_barrier.tile = '/';
 
     trap = new tiles.Group();
     trap.collider = 's';
@@ -436,11 +441,12 @@ function draw() {
 	}
 
     //При падения игрока к границам canvas
-    if (player.y > canvas.h + camera.zoom) {
+    fall_barrier.forEach(element => {
+        fall_barrier_save = element
+        if (player.y > element.y) {
         player.text = '😲'
         player.rotation = 0
         player.sleeping = true;
-        
         if (map.next_level_after_fall&&map.levels.length != 1) {
             map.levels.splice(number_level, 1)
         }
@@ -452,7 +458,24 @@ function draw() {
 		setTimeout(() => {
             player.text = '😐'
         }, 1000);
-	}
+	    }
+    });
+    if (player.y > fall_barrier_save.y&&fall_barrier.length==0) {
+        player.text = '😲'
+        player.rotation = 0
+        player.sleeping = true;
+        if (map.next_level_after_fall&&map.levels.length != 1) {
+            map.levels.splice(number_level, 1)
+        }
+        if (map.random_level_after_die) {map_create(false, 'fall')}
+        map_create(true, 'fall')
+        if (!map.random_level_after_die||map.enable_scoreDeath) {
+            scoreDeaths++
+        }
+		setTimeout(() => {
+            player.text = '😐'
+        }, 1000);
+	    }
 
     //При косания игрока к смертельному блок или при нажатии кнопки "/". При условии, что игрок не прошёл уровень
     if ((player.collides(die)||kb.presses('/'))&&!win_next) {
@@ -478,7 +501,7 @@ function draw() {
         fill(blocks.color)
         text("Deaths:" + scoreDeaths, canvas.w/15, canvas.h/5)
         text("The restart of the site", canvas.w/15, canvas.h/3)
-        text("will start in 5 minutes", canvas.w/15, canvas.h/2)
+        text("will start in 5 seconds", canvas.w/15, canvas.h/2)
         setTimeout(() => {
             location.reload();
         }, 5000);
@@ -512,7 +535,7 @@ function draw() {
     //При косания игрока к прыгующему блоку
     player.collides(jumping,(player1,jump)=>{
         if (player1.y+player1.h<jump.y) {
-            player.vel.y = -8
+            player.vel.y = -10
             player.text = '😲'
             setTimeout(() => {
                 player.text = '😐'
@@ -568,7 +591,7 @@ function draw() {
     //При косания объекта на прыгующий блок
     objects.collides(jumping,(object,jump)=>{
         if (object.y<jump.y) {
-            object.vel.y = -8
+            object.vel.y = -10
             jump.text = '⏫'
             setTimeout(() => {
                 jump.text = '⏏️'
@@ -680,11 +703,24 @@ function draw() {
     pop()
 
     dark1.layer = 2;
-    // camera.zoom = canvas.w / canvas.h
-    camera.x = 350;
-    if (map.camera_player&&player.x >= canvas.w/3.5) {
+    camera.x = canvas.w/5;
+    camera.y = canvas.h/2;
+    if (canvas.w < 1200) {
         camera.x = player.x
     }
+    if (canvas.h<800) {
+        camera.y = player.y
+    }
+    if (map.levels[random_level].camera_player!=undefined&&player.x >= canvas.w/3.5) {
+        if (map.levels[random_level].camera_player) {
+            camera.x = player.x
+        }
+    }else if(player.x >= canvas.w/3.5){
+        if (map.camera_player) {
+            camera.x = player.x
+        }
+    }
+    
 
     robots_fly.forEach(robot => {
         let distance = dist(player.x, player.y, robot.x, robot.y)
@@ -762,8 +798,20 @@ function draw() {
     if (boss[0] != undefined) {
         bullets.overlaps(boss[0], hit_boss);
     }
+    if (map.levels[random_level].effects) {
+        setTimeout(() => {
+            eff = new Sprite(random(-canvas.w,canvas.w),0)
+            eff.collider = 'd'
+            eff.diameter = 0
+            eff.mass = 0
+            eff.drag = random(2,5)
+            eff.bounciness = random(0,1);
+            eff.textColor = 'rgba(0,0,0,2)'
+            eff.text = '🌀'
+            eff.life = random(0,250)
+        }, 6000);
+    }
 }
-
 //Движение boss
 async function boss_1() {
     await boss.moveTo(100, 200, 8);
@@ -1012,18 +1060,25 @@ function map_create(restart_level, death) {
         blocks.color = blocks.stroke = map.levels[random_level].color.blocks
         wall.color = wall.stroke = map.levels[random_level].color.walls
     }
-    checkTiles(map.levels[random_level].tile)
-    if (spawns.length!=0) {
-        if (death == 'fall') {
-            if (map.fall_spawn) {
+    checkTiles(map.levels[random_level].tile,death)
+        try {
+            if (death == 'fall') {
+            if (map.fall_spawn&&spawns.length!=0) {
                 player.x = spawns[getRandomInt(0,spawns.length)].x; player.y = 0
+                
+            }else if(spawns.length==0){
+                player.y = 0
+                player_spawn.active = true
+                player_spawn.x = player.x;player_spawn.y = player.y
             }else{
                 player.y = 0
             }
-        }else{
-            player.x = spawns[getRandomInt(0,spawns.length)].x; player.y = spawns[getRandomInt(0,spawns.length)].y
+            }else{
+                player.x = spawns[getRandomInt(0,spawns.length)].x; player.y = spawns[getRandomInt(0,spawns.length)].y
+            }
+        } catch (error) {
+            player.x = player_spawn.x;player.y = player_spawn.y
         }
-    }
     if (map.levels[random_level].gun_enable!=undefined) {
         gun.visible = map.levels[random_level].gun_enable
     }else{
@@ -1049,7 +1104,7 @@ function map_create(restart_level, death) {
     // }
 }
 
-function checkTiles(tiles) {
+function checkTiles(tiles,death) {
     let count = 0
     for (let y = 0; y < tiles.length; y++) {
         for (let x = 0; x < tiles[y].length; x++) {
@@ -1058,8 +1113,9 @@ function checkTiles(tiles) {
             }
         }
     }
-    if (count == 0) {
+    if (count == 0&&death!="fall"&&!player_spawn.active) {
         player.remove()
+        console.log('%c💀Error spawn is not defined💀', 'color: red; background-color: black');
         setInterval(() => {
             for (let i = 0; i < random(10,100); i++) {
             textSize(random(16,64));
