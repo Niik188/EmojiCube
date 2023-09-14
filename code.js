@@ -21,7 +21,7 @@ let consoleActive = false;
 
 //Запуск
 function setup() {
-    createCanvas('1:2','fullscreen');
+    createCanvas('2:1','fullscreen');
     world.gravity.y = 10;
     player = new Sprite()
     player.health = 100
@@ -703,8 +703,10 @@ function draw() {
     pop()
 
     dark1.layer = 2;
-    camera.x = canvas.w/5;
-    camera.y = canvas.h/2;
+    camera.zoom = Math.abs(canvas.w*1.0007-canvas.w)
+    console.log(camera.zoom)
+    camera.x = canvas.w/0.85-canvas.w
+    camera.y = canvas.h/0.7-canvas.h
     if (canvas.w < 1200) {
         camera.x = player.x
     }
