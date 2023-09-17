@@ -9,8 +9,8 @@ let dark1;
 let dark;
 let light;
 let font;
-let alphabet = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.split(''),
-    ALPHABET = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.toUpperCase().split('');
+let alphabet = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.split('').concat(
+    'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.toUpperCase().split(''))
 let god_mode = false,pauseGame = false;
 let scoreDeaths = 0,date;
 let boss_arm;
@@ -65,13 +65,17 @@ function setup() {
     
     emoji = new tiles.Group()
     emoji.collider = 'n'
-    emoji.diameter = 0
+    emoji.diameter = 10
     emoji.textSize = 32
-    emoji.text = '📝'
+    emoji.color = `rgba(0,0,0,0)`;
+    emoji.stroke = `rgba(0,0,0,0)`;
+    emoji.text = '�'
     emoji.tile = '~'
 
+    alphabet_letters = new tiles.Group()
     alphabet.forEach(letter => {
-        let lettero = new tiles.Group();
+        let lettero = new alphabet_letters.Group();
+        lettero.type = "letter"
         lettero.debug = true
         lettero.collider = 's';
         lettero.color = `rgba(0,0,0,0)`;
@@ -87,22 +91,6 @@ function setup() {
         }
         if (letter == 'i'||letter == 'l') {
             lettero.w = 10;
-        }
-    });
-    ALPHABET.forEach(letter => {
-        let lettero = new tiles.Group();
-        lettero.debug = true
-        lettero.collider = 's';
-        lettero.color = `rgba(0,0,0,0)`;
-        lettero.stroke = `rgba(0,0,0,0)`;
-        lettero.w = 35;
-	    lettero.h = 25;
-        lettero.textSize = 35;
-        lettero.tile = letter;
-        lettero.text = letter;
-        if (letter == 'e'||letter == 'o'||letter == 'c'||letter == 'о'||letter == 'с'||
-        letter == 'э'||letter == 'е') {
-            lettero.diameter = 30;
         }
     });
 
@@ -254,7 +242,6 @@ function setup() {
     map_create()
     if (getRandomInt(0,10) <= 3) {
         document.title = '🥵EmojiCube😋'
-        player.text = '😳'
     }
     // else if (getRandomInt(0,10) <= 6) {
     //     document.title = '♂️EmojiBilly♂️'
@@ -262,12 +249,13 @@ function setup() {
     //     player.mirror.y = 1
     // }
 }   
-
+let background1
 //До загрузки
 function preload() {
     json = loadJSON('./map.json');
     dark = loadImage('./img/dark.png');
     //background(canvas.toDataURL())
+    background1 = loadImage('./img/background.png');
     light = loadImage('./img/light.png');
     font = loadFont("./fonts/typewriter.ttf");
 }
@@ -317,7 +305,9 @@ function draw() {
         map_create()
         commandsGame.stage=""
     }
-    background(backgroundMap)
+    imageMode(CORNERS)
+    //background(backgroundMap)
+    background(background1, 150)
     gun.x = player.x; gun.y = player.y
     gun.rotateTowards(mouse, 0.1, 0);
     //При нажатие кнопки мыши и при наличие оружия
@@ -578,6 +568,23 @@ function draw() {
         }, 200);
     })
 
+    player.collides(alphabet_letters,(player,tile)=>{
+        if (tile.type=='letter'&&tile.collider == 'static'&&getRandomInt(0,alphabet_letters.length)==6) {
+            tile.collider = 'd'
+            tile.textColor = 'rgb(100,100,100)'
+            tile.life = getRandomInt(1500,1560)
+        }
+    })
+
+    bullets.collides(alphabet_letters,(bullet,tile)=>{
+        if (tile.type=='letter'&&tile.collider == 'static'&&getRandomInt(0,10)==6) {
+            tile.collider = 'd'
+            tile.textColor = 'rgb(100,100,100)'
+            tile.life = getRandomInt(1500,1560)
+        }
+    })
+
+
     //При косания куба лазера
     cubes.overlaps(lasers,(cube,laser)=>{
         cube.drag = 10;
@@ -671,7 +678,8 @@ function draw() {
     //При косания пуль к роботам
     bullets.overlaps(robots_fly, hit);
     bullets.overlaps(robots, hit);
-    
+    // imageMode(CORNERS)
+    // image(background1, 0, 0, canvas.w, canvas.h)
     //GUI
     push()
     textFont(font);
@@ -701,7 +709,7 @@ function draw() {
         text(err + " " + "♾️", 10, 20)
     }
     pop()
-
+    
     dark1.layer = 2;
     camera.zoom = Math.abs(canvas.w*1.0007-canvas.w)
     console.log(camera.zoom)
@@ -1108,6 +1116,7 @@ function map_create(restart_level, death) {
 
 function checkTiles(tiles,death) {
     let count = 0
+    // create a new image, same dimensions as img
     for (let y = 0; y < tiles.length; y++) {
         for (let x = 0; x < tiles[y].length; x++) {
             if (tiles[y][x] == '{') {
