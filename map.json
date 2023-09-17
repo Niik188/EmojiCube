@@ -1,5 +1,7 @@
 {
     "info":["easy","normal","hard","extreme","boss","anomaly"],
+    "formatIMG": "png",
+    "images":["dark"],
     "tutorial":[{
         "title":"Tutorial",
         "tick": false,
@@ -59,7 +61,7 @@
     "easy":[{
         "title":"Easy",
         "tick": false,
-        "background": [225,225,225,120],
+        "background": [255,255,255, 150],
         "light": true,
         "gun_of_win":false,
         "random_level":true,

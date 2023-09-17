@@ -1,27 +1,45 @@
-let player, player_spawn = {active:false,x:0,y:0};
+let player, player_spawn = { active: false, x: 0, y: 0 };
 let tiles;
 let json;
 let win_next = false, slowmotion = false;
 let difficulty;
-let map = [], backgroundMap,fall_barrier_save;
+let map = [], backgroundMap, fall_barrier_save;
 let number_level = 0, random_level = 0;
 let dark1;
 let dark;
 let light;
 let font;
-let alphabet = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.split('').concat(
-    'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'.toUpperCase().split(''))
-let god_mode = false,pauseGame = false;
-let scoreDeaths = 0,date;
+const alphabetLang = 'abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё'
+let alphabet = (alphabetLang + alphabetLang.toUpperCase()).split('');
+let god_mode = false, pauseGame = false;
+let scoreDeaths = 0, date;
 let boss_arm;
 let commandsGame = {
     stage: ""
 };
 let consoleActive = false;
+let images = []
 
 //Запуск
 function setup() {
-    createCanvas('2:1','fullscreen');
+    for (let i = 0; i < json.images.length; i++) {
+        if (json.images[i].indexOf(`.`) != -1) {
+            img = loadImage(`./img/${json.images[i]}`)
+        }else {
+            img = loadImage(`./img/${json.images[i]}.${json.formatIMG}`)
+        }
+        if (json.images[i].indexOf(`.gif`) != -1) {
+            img = loadGif(`./img/${json.images[i]}.${json.formatIMG}`)
+        }
+        if (json.images[i].indexOf(`dark`) != -1) {
+            dark = img
+            console.log("Dark is done" + dark1)
+        }else{
+        images.push(img)
+        console.log("Image is done. Image: " + img)
+        }
+    }
+    createCanvas('2:1', 'fullscreen');
     world.gravity.y = 10;
     player = new Sprite()
     player.health = 100
@@ -52,17 +70,17 @@ function setup() {
 
     tiles = new Group()
     tiles.w = 50;
-	tiles.h = 50;
+    tiles.h = 50;
 
     objects = new Group()
     objects.w = 50;
-	objects.h = 50;
-    
+    objects.h = 50;
+
     spawns = new tiles.Group()
     spawns.collider = 'n'
     spawns.visible = false
     spawns.tile = '{'
-    
+
     emoji = new tiles.Group()
     emoji.collider = 'n'
     emoji.diameter = 10
@@ -81,15 +99,15 @@ function setup() {
         lettero.color = `rgba(0,0,0,0)`;
         lettero.stroke = `rgba(0,0,0,0)`;
         lettero.w = 20;
-	    lettero.h = 20;
+        lettero.h = 20;
         lettero.textSize = 40;
         lettero.tile = letter;
         lettero.text = letter;
-        if (letter == 'e'||letter == 'o'||letter == 'c'||letter == 'q'||letter == 'о'||letter == 'с'||
-        letter == 'р'||letter == 'э'||letter == 'е') {
+        if (letter == 'e' || letter == 'o' || letter == 'c' || letter == 'q' || letter == 'о' || letter == 'с' ||
+            letter == 'р' || letter == 'э' || letter == 'е') {
             lettero.diameter = 20;
         }
-        if (letter == 'i'||letter == 'l') {
+        if (letter == 'i' || letter == 'l') {
             lettero.w = 10;
         }
     });
@@ -97,53 +115,53 @@ function setup() {
     blocks = new tiles.Group();
     blocks.collider = 's';
     blocks.color = 'black';
-	blocks.tile = '=';
+    blocks.tile = '=';
 
     cubes = new objects.Group();
     cubes.collider = 'd'
     cubes.active = true
     cubes.textSize = 32
     cubes.w = 30;
-	cubes.h = 30;
+    cubes.h = 30;
     cubes.text = '🔲'
-	cubes.tile = ',';
+    cubes.tile = ',';
 
     spike = new tiles.Group();
     spike.collider = 's';
     spike.img = './img/spike.png';
-	spike.w = 30;
-	spike.h = 30;
-	spike.tile = '*';
+    spike.w = 30;
+    spike.h = 30;
+    spike.tile = '*';
 
     wall = new tiles.Group();
     wall.collider = 'static';
     wall.color = 'rgb(155,155,155)';
     wall.stroke = 'gray';
-	wall.tile = '|';
+    wall.tile = '|';
 
     jumping = new tiles.Group();
     jumping.collider = 's';
     jumping.textSize = 42
     jumping.text = '⏏️'
     jumping.w = 45;
-	jumping.h = 42;
-	jumping.tile = '+';
+    jumping.h = 42;
+    jumping.tile = '+';
 
     speedRight = new tiles.Group();
     speedRight.collider = 's';
     speedRight.textSize = 42
     speedRight.text = '▶️'
     speedRight.w = 45;
-	speedRight.h = 42;
-	speedRight.tile = '>';
+    speedRight.h = 42;
+    speedRight.tile = '>';
 
     speedLeft = new tiles.Group();
     speedLeft.collider = 's';
     speedLeft.textSize = 42
     speedLeft.text = '◀️'
     speedLeft.w = 45;
-	speedLeft.h = 42;
-	speedLeft.tile = '<';
+    speedLeft.h = 42;
+    speedLeft.tile = '<';
 
     boss = new objects.Group();
     boss.collider = 'k'
@@ -152,15 +170,15 @@ function setup() {
     boss.text = '😈'
     boss.tile = '1'
     boss_1()
-    
+
     boss_arm = new spike.Group()
 
     robots = new objects.Group();
     robots.collider = 'd';
     robots.img = './img/robot.png';
-	robots.w = 40;
-	robots.h = 40;
-	robots.tile = '0';
+    robots.w = 40;
+    robots.h = 40;
+    robots.tile = '0';
     robots.health = 30
     move_robot()
 
@@ -169,36 +187,36 @@ function setup() {
     // robots_fly.img = './img/fly_robot.png';
     robots_fly.textSize = 35
     robots_fly.text = '💿🧿💿'
-	robots_fly.diameter = 30;
-	robots_fly.tile = '@';
+    robots_fly.diameter = 30;
+    robots_fly.tile = '@';
     robots_fly.health = 50
     move_robot_fly()
 
     die = new tiles.Group();
     die.collider = 's';
     die.color = 'purple';
-	die.tile = '?';
+    die.tile = '?';
 
     fall = new tiles.Group();
     fall.collider = 's';
     fall.color = blocks.color
-	fall.tile = '-';
+    fall.tile = '-';
 
     fall_barrier = new tiles.Group();
     fall_barrier.collider = 'n';
     fall_barrier.d = 0
-	fall_barrier.tile = '/';
+    fall_barrier.tile = '/';
 
     trap = new tiles.Group();
     trap.collider = 's';
     trap.color = blocks.color
-	trap.tile = "'";
+    trap.tile = "'";
 
     laser_traps = new tiles.Group()
     laser_traps.active = true
     laser_traps.collider = 's'
     laser_traps.color = blocks.color
-	laser_traps.tile = '!';
+    laser_traps.tile = '!';
 
     lasers = new Group()
     lasers.collider = 'k'
@@ -216,121 +234,125 @@ function setup() {
     fake.collider = 'n';
     fake.color = wall.color
     fake.stroke = wall.stroke
-	fake.w = 50;
-	fake.h = 50;
-	fake.tile = '_';
+    fake.w = 50;
+    fake.h = 50;
+    fake.tile = '_';
 
     win = new tiles.Group();
     win.collider = 'd';
     // win.img = './img/win_block.png';
     win.textSize = 50
     win.text = '✅'
-	win.w = 50;
-	win.h = 50;
-	win.tile = ']';
+    win.w = 50;
+    win.h = 50;
+    win.tile = ']';
 
     dark1 = new Sprite()
     dark1.img = dark;
     dark1.collider = 'n'
     dark1.visible = false
     dark1.scale = 10
-
+    
     dark.mask(light);
     imageMode(CENTER);
     difficulty = 0
     map = json[json.info[difficulty]][0]
     map_create()
-    if (getRandomInt(0,10) <= 3) {
+    if (getRandomInt(0, 10) <= 3) {
         document.title = '🥵EmojiCube😋'
     }
-    // else if (getRandomInt(0,10) <= 6) {
-    //     document.title = '♂️EmojiBilly♂️'
-    //     player.text = '️󠁨👨'
-    //     player.mirror.y = 1
-    // }
-}   
-let background1
+}
 //До загрузки
 function preload() {
     json = loadJSON('./map.json');
     dark = loadImage('./img/dark.png');
     //background(canvas.toDataURL())
-    background1 = loadImage('./img/background.png');
     light = loadImage('./img/light.png');
     font = loadFont("./fonts/typewriter.ttf");
 }
 
 //Движение роботов
 async function move_robot() {
-    await robots.moveTo(player.x-10, player.y-20, 2);
-	await delay(200);
-	await robots.moveTo(player.x, player.y, 2);
+    await robots.moveTo(player.x - 10, player.y - 20, 2);
+    await delay(200);
+    await robots.moveTo(player.x, player.y, 2);
     await delay(200);
     move_robot()
 }
 
 //Движение ультра-роботов
 async function move_ultra_robot() {
-    await robots.moveTo(player.x-10, player.y, 2);
-	await delay(200);
-	await robots.moveTo(player.x, player.y, 5);
+    await robots.moveTo(player.x - 10, player.y, 2);
+    await delay(200);
+    await robots.moveTo(player.x, player.y, 5);
     await delay(500);
-	move_robot()
+    move_robot()
 }
 
 //Движение летающих роботов
 async function move_robot_fly() {
-	await robots_fly.moveTo(player.x, player.y, 5);
+    await robots_fly.moveTo(player.x, player.y, 5);
     await delay(100);
-	move_robot_fly()
+    move_robot_fly()
 }
 
 //Движение летающих ультра-роботов
 async function move_ultra_robot_fly() {
-	await robots_fly.moveTo(player.x, player.y/2, 3);
+    await robots_fly.moveTo(player.x, player.y / 2, 3);
     await delay(200);
-    await robots_fly.moveTo(player.x, player.y*1.2, 10);
+    await robots_fly.moveTo(player.x, player.y * 1.2, 10);
     await delay(500);
-	move_robot_fly()
+    move_robot_fly()
+}
+
+function windowResized(){
+    setTimeout(() => {
+        createCanvas('2:1', 'fullscreen');
+    }, 60);
 }
 
 //Рендер
 function draw() {
-    if (commandsGame.stage!="") {
+    if (commandsGame.stage != "") {
         consoleActive = true
-        map = commandsGame.stage
+        map = json[commandsGame.stage][0]
         if (!map.random_level) {
             number_level = random_level = 0
         }
         map_create()
-        commandsGame.stage=""
+        commandsGame.stage = ""
     }
-    imageMode(CORNERS)
-    //background(backgroundMap)
-    background(background1, 150)
+    
+    if (backgroundMap.img!=undefined) {
+        imageMode(CORNERS)
+        background(images[backgroundMap.img-1])
+        
+    }else{
+        background(backgroundMap)
+    }
     gun.x = player.x; gun.y = player.y
     gun.rotateTowards(mouse, 0.1, 0);
     //При нажатие кнопки мыши и при наличие оружия
-    if (mouse.presses()&&gun.visible){
+    if (mouse.presses() && gun.visible) {
         delay(500);
         let bullet = new bullets.Sprite()
-        if (gun.x<mouse.x) {
-            bullet.x = gun.x+10;bullet.y = gun.y;
-        }else{
-            bullet.x = gun.x-10;bullet.y = gun.y;
+        if (gun.x < mouse.x) {
+            bullet.x = gun.x + 10; bullet.y = gun.y;
+        } else {
+            bullet.x = gun.x - 10; bullet.y = gun.y;
         }
-        
+
         bullet.direction = bullet.angleTo(mouse);
     }
     //Отражать оружие, когда x мыши меньше x игрока
-    if (player.x<mouse.x) {
+    if (player.x < mouse.x) {
         gun.mirror.x = true;
         gun.mirror.y = false;
-    }else{
+    } else {
         gun.mirror.x = true;
         gun.mirror.y = true;
     }
-    
+
     dark1.moveTowards(mouse, 0.10);
     //Клавиши
     //Noclip
@@ -355,7 +377,7 @@ function draw() {
         player.collider = 'n'
     }
     //Use
-    if (kb.presses('e')&&player.colliding(button)) {
+    if (kb.presses('e') && player.colliding(button)) {
         console.log("PLAYER USED BUTTON")
         laser_traps.forEach(laser_trap => {
             laser_trap.active = false
@@ -375,12 +397,12 @@ function draw() {
     if (pauseGame) {
         allSprites.sleeping = true;
         background(150, 150, 150)
-    }else{
+    } else {
         allSprites.sleeping = false;
     }
 
     //При косания игрока к шипам, летающим или просто роботов. При условии, что игрок не прошёл уровень
-    if ((player.collides(spike)||player.overlaps(lasers)||player.collides(robots)||player.collides(robots_fly))&&player.visible&&!win_next) {
+    if ((player.collides(spike) || player.overlaps(lasers) || player.collides(robots) || player.collides(robots_fly)) && player.visible && !win_next) {
         let skeleton = new objects.Sprite(player.x, player.y)
         skeleton.collider = 'd'
         skeleton.color = 'white';
@@ -406,69 +428,69 @@ function draw() {
         if (boss[0] != undefined) {
             boss[0].text = '👹'
         }
-        if (map.levels[random_level].gun_enable!=undefined){
+        if (map.levels[random_level].gun_enable != undefined) {
             gun_weapon.visible = map.levels[random_level].gun_enable
-        }else{
+        } else {
             gun_weapon.visible = map.gun_enable
         }
-        player.x = 0;player.y = 0;
+        player.x = 0; player.y = 0;
         player.visible = false
         gun.visible = false
         slowmotion = true
         setTimeout(() => {
-            if(map.enable_scoreDeath){
+            if (map.enable_scoreDeath) {
                 scoreDeaths++
-            }else if (map.enable_scoreDeath==undefined){
+            } else if (map.enable_scoreDeath == undefined) {
                 scoreDeaths++
             }
-        player.sleeping = true;
-        player.visible = true
-        player.rotation = 0
-        slowmotion = false
-        if (map.random_level_after_die) {map_create(false, 'spike')}
-        else{map_create(true, 'spike')}
+            player.sleeping = true;
+            player.visible = true
+            player.rotation = 0
+            slowmotion = false
+            if (map.random_level_after_die) { map_create(false, 'spike') }
+            else { map_create(true, 'spike') }
         }, 2000);
-	}
+    }
 
     //При падения игрока к границам canvas
     fall_barrier.forEach(element => {
         fall_barrier_save = element
         if (player.y > element.y) {
-        player.text = '😲'
-        player.rotation = 0
-        player.sleeping = true;
-        if (map.next_level_after_fall&&map.levels.length != 1) {
-            map.levels.splice(number_level, 1)
+            player.text = '😲'
+            player.rotation = 0
+            player.sleeping = true;
+            if (map.next_level_after_fall && map.levels.length != 1) {
+                map.levels.splice(number_level, 1)
+            }
+            if (map.random_level_after_die) { map_create(false, 'fall') }
+            map_create(true, 'fall')
+            if (!map.random_level_after_die || map.enable_scoreDeath) {
+                scoreDeaths++
+            }
+            setTimeout(() => {
+                player.text = '😐'
+            }, 1000);
         }
-        if (map.random_level_after_die) {map_create(false, 'fall')}
-        map_create(true, 'fall')
-        if (!map.random_level_after_die||map.enable_scoreDeath) {
-            scoreDeaths++
-        }
-		setTimeout(() => {
-            player.text = '😐'
-        }, 1000);
-	    }
     });
-    if (player.y > fall_barrier_save.y&&fall_barrier.length==0) {
+    if (player.y > fall_barrier_save.y && fall_barrier.length == 0) {
         player.text = '😲'
         player.rotation = 0
         player.sleeping = true;
-        if (map.next_level_after_fall&&map.levels.length != 1) {
+        if (map.next_level_after_fall && map.levels.length != 1) {
             map.levels.splice(number_level, 1)
         }
-        if (map.random_level_after_die) {map_create(false, 'fall')}
+        if (map.random_level_after_die) { map_create(false, 'fall') }
         map_create(true, 'fall')
-        if (!map.random_level_after_die||map.enable_scoreDeath) {
+        if (!map.random_level_after_die || map.enable_scoreDeath) {
             scoreDeaths++
         }
-		setTimeout(() => {
+        setTimeout(() => {
             player.text = '😐'
         }, 1000);
-	    }
+    }
 
     //При косания игрока к смертельному блок или при нажатии кнопки "/". При условии, что игрок не прошёл уровень
-    if ((player.collides(die)||kb.presses('/'))&&!win_next) {
+    if ((player.collides(die) || kb.presses('/')) && !win_next) {
         let skeleton = new Sprite(player.x, player.y)
         player.visible = false
         skeleton.collider = 'd'
@@ -480,41 +502,41 @@ function draw() {
         skeleton.life = 50;
         // alert("💀goodbye!💀 Deaths💀:" + scoreDeaths)
         textFont(font);
-        for (let i = 0; i < random(10,100); i++) {
-            textSize(random(16,64));
-            fill(random(120,255))
-            text("SyntaxError:player is not defined", random(0,canvas.w), random(0,canvas.h))
-            text("SyntaxError: purple destroy player forever ", random(0,canvas.w), random(0,canvas.h))
-            text("Uncaught SyntaxError: 🤚😨✋ ", random(0,canvas.w), random(0,canvas.h))
+        for (let i = 0; i < random(10, 100); i++) {
+            textSize(random(16, 64));
+            fill(random(120, 255))
+            text("SyntaxError:player is not defined", random(0, canvas.w), random(0, canvas.h))
+            text("SyntaxError: purple destroy player forever ", random(0, canvas.w), random(0, canvas.h))
+            text("Uncaught SyntaxError: 🤚😨✋ ", random(0, canvas.w), random(0, canvas.h))
         }
         textSize(64);
         fill(blocks.color)
-        text("Deaths:" + scoreDeaths, canvas.w/15, canvas.h/5)
-        text("The restart of the site", canvas.w/15, canvas.h/3)
-        text("will start in 5 seconds", canvas.w/15, canvas.h/2)
+        text("Deaths:" + scoreDeaths, canvas.w / 15, canvas.h / 5)
+        text("The restart of the site", canvas.w / 15, canvas.h / 3)
+        text("will start in 5 seconds", canvas.w / 15, canvas.h / 2)
         setTimeout(() => {
             location.reload();
         }, 5000);
         throw new SyntaxError("🤚😨✋");
-        
-	}
+
+    }
 
     //При косания игрока к сломанному блоку
-    player.collides(fall, (player, fall)=>{
+    player.collides(fall, (player, fall) => {
         if (fall.collider == 'static') {
-        setTimeout(() => {
-            fall.collider = 'd'
-            fall.life = 40
-        }, 500);
+            setTimeout(() => {
+                fall.collider = 'd'
+                fall.life = 40
+            }, 500);
         }
     })
 
     //При косания игрока к ловушке
-    player.collides(trap, (player, trap)=> {
+    player.collides(trap, (player, trap) => {
         setTimeout(() => {
             let spikes = new spike.Sprite()
             spikes.x = trap.x
-            spikes.y = trap.y-10
+            spikes.y = trap.y - 10
             spikes.textSize = 25
             spikes.text = '🖤'
             spikes.collider = 's'
@@ -523,8 +545,8 @@ function draw() {
     })
 
     //При косания игрока к прыгующему блоку
-    player.collides(jumping,(player1,jump)=>{
-        if (player1.y+player1.h<jump.y) {
+    player.collides(jumping, (player1, jump) => {
+        if (player1.y + player1.h < jump.y) {
             player.vel.y = -10
             player.text = '😲'
             setTimeout(() => {
@@ -535,15 +557,15 @@ function draw() {
                 jump.text = '⏏️'
             }, 200);
         }
-        if (player1.y>jump.y+jump.h) {
+        if (player1.y > jump.y + jump.h) {
             player.vel.y = 10
         }
-        
-        
-	})
+
+
+    })
 
     //При косания игрока к ускоренному вправо блоку
-    player.collides(speedRight,(player1,speed1)=>{
+    player.collides(speedRight, (player1, speed1) => {
         player.vel.x = 8
         player.text = '😲'
         setTimeout(() => {
@@ -553,10 +575,10 @@ function draw() {
         setTimeout(() => {
             speed1.text = '▶️'
         }, 200);
-	})
+    })
 
     //При косания игрока к ускоренному влево блоку
-    player.collides(speedLeft,(player1,speed1)=>{
+    player.collides(speedLeft, (player1, speed1) => {
         player.vel.x = -8
         player.text = '😲'
         setTimeout(() => {
@@ -568,25 +590,25 @@ function draw() {
         }, 200);
     })
 
-    player.collides(alphabet_letters,(player,tile)=>{
-        if (tile.type=='letter'&&tile.collider == 'static'&&getRandomInt(0,alphabet_letters.length)==6) {
+    player.collides(alphabet_letters, (player, tile) => {
+        if (tile.type == 'letter' && tile.collider == 'static' && getRandomInt(0, alphabet_letters.length) == 6) {
             tile.collider = 'd'
             tile.textColor = 'rgb(100,100,100)'
-            tile.life = getRandomInt(1500,1560)
+            tile.life = getRandomInt(1500, 1560)
         }
     })
 
-    bullets.collides(alphabet_letters,(bullet,tile)=>{
-        if (tile.type=='letter'&&tile.collider == 'static'&&getRandomInt(0,10)==6) {
+    bullets.collides(alphabet_letters, (bullet, tile) => {
+        if (tile.type == 'letter' && tile.collider == 'static' && getRandomInt(0, 10) == 6) {
             tile.collider = 'd'
             tile.textColor = 'rgb(100,100,100)'
-            tile.life = getRandomInt(1500,1560)
+            tile.life = getRandomInt(1500, 1560)
         }
     })
 
 
     //При косания куба лазера
-    cubes.overlaps(lasers,(cube,laser)=>{
+    cubes.overlaps(lasers, (cube, laser) => {
         cube.drag = 10;
         cube.text = '🈲'
         cube.collider = 'd'
@@ -596,21 +618,21 @@ function draw() {
     })
 
     //При косания объекта на прыгующий блок
-    objects.collides(jumping,(object,jump)=>{
-        if (object.y<jump.y) {
+    objects.collides(jumping, (object, jump) => {
+        if (object.y < jump.y) {
             object.vel.y = -10
             jump.text = '⏫'
             setTimeout(() => {
                 jump.text = '⏏️'
             }, 200);
         }
-        if (object.y>jump.y+jump.h) {
+        if (object.y > jump.y + jump.h) {
             object.vel.y = 10
         }
     })
 
     //При косания игрока к ускоренному вправо блоку
-    objects.collides(speedRight,(object,speed1)=>{
+    objects.collides(speedRight, (object, speed1) => {
         object.vel.x = 10
         object.vel.y = -2
         speed1.text = '⏩'
@@ -620,7 +642,7 @@ function draw() {
     })
 
     //При косания игрока к ускоренному влево блоку
-    objects.collides(speedLeft,(object,speed1)=>{
+    objects.collides(speedLeft, (object, speed1) => {
         object.vel.x = -10
         object.vel.y = -2
         speed1.text = '⏪'
@@ -628,51 +650,51 @@ function draw() {
             speed1.text = '◀️'
         }, 200);
     })
-    
+
     //При косания игрока к выигрышу
-    if (player.collides(win)&&!win_next) {
+    if (player.collides(win) && !win_next) {
         player.text = '😄'
         win_next = slowmotion = true
         if (!map.gun_of_win) {
             win.text = '✔️'
-        }else{
+        } else {
             win.visible = false
         }
         win.w = 1;
-	    win.h = 1;
+        win.h = 1;
         setTimeout(() => {
             player.text = '😐'
-            if(json.info[difficulty] == 'boss'){
+            if (json.info[difficulty] == 'boss') {
                 player.text = '🙁'
             }
-            if(map.one_level == true) {
+            if (map.one_level == true) {
                 map.levels.splice(0, map.levels.length);
-            }else{
+            } else {
                 map.levels.splice(number_level, 1)
             }
             win.text = '✅'
             win.collider = 'd'
             win.visible = true
             win.w = 50;
-	        win.h = 50;
+            win.h = 50;
             win_next = slowmotion = false
             map_create(false)
             player.rotation = 0
         }, 1000);
-	}
-    
+    }
+
     if (slowmotion) {
-        world.step(1/240);
+        world.step(1 / 240);
     }
 
     if (win_next) {
-        if(json.info[difficulty] == 'boss'){
-            background(0,0,0, 255)
+        if (json.info[difficulty] == 'boss') {
+            background(0, 0, 0, 255)
             player.text = '😰'
-        }else{
-            background(0,255,0, 10)
+        } else {
+            background(0, 255, 0, 10)
         }
-        
+
     }
 
     //При косания пуль к роботам
@@ -685,66 +707,65 @@ function draw() {
     textFont(font);
     textSize(24);
     fill(0, 0, 0);
-    rect(4,2,300, 55)
+    rect(4, 2, 300, 55)
     fill(255, 255, 255);
     date = new Date();
     try {
-      
-        if (map.levels.length<=1) {
+
+        if (map.levels.length <= 1) {
             text(map.title + " Deaths: " + scoreDeaths, 10, 20)
-        }else{
+        } else {
             text(map.title + " " + map.levels.length + " Deaths: " + scoreDeaths, 10, 20)
         }
-      text(date.toLocaleTimeString() + " " + date.toLocaleDateString(), 10, 40)
-      if (boss.length!=0) {
-        fill(255, 255, 255);
-        textFont('Arial');
-        let text1 = []
-        for (let i = 0; i < boss[0].health/10; i++) {
-            text1.push('❤️')
+        text(date.toLocaleTimeString() + " " + date.toLocaleDateString(), 10, 40)
+        if (boss.length != 0) {
+            fill(255, 255, 255);
+            textFont('Arial');
+            let text1 = []
+            for (let i = 0; i < boss[0].health / 10; i++) {
+                text1.push('❤️')
+            }
+            text(" BOSS: " + text1.join(''), 4, 90)
         }
-        text(" BOSS: " + text1.join(''), 4, 90)
-      }
     } catch (err) {
         text(err + " " + "♾️", 10, 20)
     }
     pop()
-    
+
     dark1.layer = 2;
-    camera.zoom = Math.abs(canvas.w*1.0007-canvas.w)
-    console.log(camera.zoom)
-    camera.x = canvas.w/0.85-canvas.w
-    camera.y = canvas.h/0.7-canvas.h
+    camera.zoom = Math.abs(canvas.w * 1.0007 - canvas.w)
+    camera.x = canvas.w / 0.85 - canvas.w
+    camera.y = canvas.h / 0.7 - canvas.h
     if (canvas.w < 1200) {
         camera.x = player.x
     }
-    if (canvas.h<800) {
+    if (canvas.h < 800) {
         camera.y = player.y
     }
-    if (map.levels[random_level].camera_player!=undefined&&player.x >= canvas.w/3.5) {
+    if (map.levels[random_level].camera_player != undefined && player.x >= canvas.w / 3.5) {
         if (map.levels[random_level].camera_player) {
             camera.x = player.x
         }
-    }else if(player.x >= canvas.w/3.5){
+    } else if (player.x >= canvas.w / 3.5) {
         if (map.camera_player) {
             camera.x = player.x
         }
     }
-    
+
 
     robots_fly.forEach(robot => {
         let distance = dist(player.x, player.y, robot.x, robot.y)
-        if(distance < 70){
+        if (distance < 70) {
             player.text = '😱'
             setTimeout(() => {
                 player.text = '😐'
             }, 500);
-        }else if(distance < 80){
+        } else if (distance < 80) {
             player.text = '😨'
             setTimeout(() => {
                 player.text = '😐'
             }, 500);
-        }else if(distance < 150){
+        } else if (distance < 150) {
             player.text = '😟'
             setTimeout(() => {
                 player.text = '😐'
@@ -754,17 +775,17 @@ function draw() {
 
     boss_arm.forEach(arm => {
         let distance = dist(player.x, player.y, arm.x, arm.y)
-        if(distance < 70){
+        if (distance < 70) {
             player.text = '😱'
             setTimeout(() => {
                 player.text = '😐'
             }, 500);
-        }else if(distance < 80){
+        } else if (distance < 80) {
             player.text = '😨'
             setTimeout(() => {
                 player.text = '😐'
             }, 500);
-        }else if(distance < 150){
+        } else if (distance < 150) {
             player.text = '😟'
             setTimeout(() => {
                 player.text = '😐'
@@ -779,23 +800,23 @@ function draw() {
             laser.speed = 10
             laser.life = 40
             laser.x = laser_trap.x
-            laser.y = laser_trap.y-laser_trap.w-1
+            laser.y = laser_trap.y - laser_trap.w - 1
             laser.w = 1
-            
+
         }
     });
 
     cubes.forEach(cube => {
         let distance = dist(player.x, player.y, mouse.x, mouse.y)
-        if (cube.mouse.pressing()&&distance<250) {
-                cube.x = mouse.x;cube.y = mouse.y
-                cube.sleeping = true
-                cube.collider = 'd'
-                cube.text = '🔲'
-                cube.active = true
-        }else{
-            if (cube.collider == 'dynamic'&&cube.colliding(tiles)
-            &&!cube.colliding(jumping)&&!cube.colliding(speedRight)&&!cube.colliding(speedLeft)) {
+        if (cube.mouse.pressing() && distance < 250) {
+            cube.x = mouse.x; cube.y = mouse.y
+            cube.sleeping = true
+            cube.collider = 'd'
+            cube.text = '🔲'
+            cube.active = true
+        } else {
+            if (cube.collider == 'dynamic' && cube.colliding(tiles)
+                && !cube.colliding(jumping) && !cube.colliding(speedRight) && !cube.colliding(speedLeft)) {
                 setTimeout(() => {
                     cube.collider = 'k'
                     cube.sleeping = true
@@ -810,23 +831,23 @@ function draw() {
     }
     if (map.levels[random_level].effects) {
         setTimeout(() => {
-            eff = new Sprite(random(-canvas.w,canvas.w),0)
+            eff = new Sprite(random(-canvas.w, canvas.w), 0)
             eff.collider = 'd'
             eff.diameter = 0
             eff.mass = 0
-            eff.drag = random(2,5)
-            eff.bounciness = random(0,1);
+            eff.drag = random(2, 5)
+            eff.bounciness = random(0, 1);
             eff.textColor = 'rgba(0,0,0,2)'
             eff.text = '🌀'
-            eff.life = random(0,250)
+            eff.life = random(0, 250)
         }, 6000);
     }
 }
 //Движение boss
 async function boss_1() {
     await boss.moveTo(100, 200, 8);
-	await delay(30);
-	await boss.moveTo(750, 200, 8);
+    await delay(30);
+    await boss.moveTo(750, 200, 8);
     await delay(30);
     boss_1()
 }
@@ -834,10 +855,10 @@ async function boss_1() {
 //Движение boss_arm
 async function boss_arm_1(arm1) {
     if (boss[0] != undefined) {
-        await arm1.moveTo(boss[0].x-random(-250,250), boss[0].y, 25);
-	    await delay(scoreDeaths*100+200);
+        await arm1.moveTo(boss[0].x - random(-250, 250), boss[0].y, 25);
+        await delay(scoreDeaths * 100 + 200);
         await arm1.rotateTo(player, 10, 0);
-	    await arm1.moveTo(player.x, player.y, 20-(boss[0].health+30)/8);
+        await arm1.moveTo(player.x, player.y, 20 - (boss[0].health + 30) / 8);
         await delay(50);
     }
     if (boss[0] != undefined) {
@@ -857,10 +878,10 @@ setInterval(() => {
 
 //Урон по врагу при косания пуль к врагу
 function hit(bullet, robot) {
-	robot.health -= 10
+    robot.health -= 10
     if (robot.health <= 0) {
         robot.remove()
-        let explosion = new Sprite(bullet.x,bullet.y)
+        let explosion = new Sprite(bullet.x, bullet.y)
         explosion.collider = 'n'
         explosion.textSize = 50
         explosion.text = '💥'
@@ -871,8 +892,8 @@ function hit(bullet, robot) {
         detals.collider = 'd'
         detals.textSize = 30
         detals.text = '⚙️'
-        detals.x = bullet.x + random(-2,2)
-        detals.y = bullet.y + random(-2,2)
+        detals.x = bullet.x + random(-2, 2)
+        detals.y = bullet.y + random(-2, 2)
         detals.amount = 5
         detals.bounciness = 1;
         detals.friction = 0;
@@ -888,17 +909,17 @@ function hit_boss(bullet, boss1) {
     setTimeout(() => {
         boss1.text = '😈'
     }, 200);
-	boss1.health -= 5
+    boss1.health -= 5
     if (boss1.health < 20) {
-        die1 = new die.Sprite(random(100,750),boss1.y-30)
+        die1 = new die.Sprite(random(100, 750), boss1.y - 30)
         die1.collider = 'd'
         die1.textSize = 32
         die1.text = '🔮'
-        die1.diameter =20
+        die1.diameter = 20
         die1.life = 100
     }
     if (boss1.health <= 0) {
-        let explosion = new Sprite(boss1.x,boss1.y)
+        let explosion = new Sprite(boss1.x, boss1.y)
         explosion.collider = 'n'
         explosion.textSize = 240
         explosion.text = '💥'
@@ -916,11 +937,11 @@ function hit_boss(bullet, boss1) {
         detals.layer = 1;
         for (let i = 0; i < 10; i++) {
             let del = new detals.Sprite()
-            del.x = boss1.x + random(-60,60)
-            del.y = boss1.y + random(-60,60)
+            del.x = boss1.x + random(-60, 60)
+            del.y = boss1.y + random(-60, 60)
         }
         if (detals != undefined) {
-            new win.Sprite(boss1.x,boss1.y+150)
+            new win.Sprite(boss1.x, boss1.y + 150)
         }
         boss_arm.remove()
         boss1.remove()
@@ -929,55 +950,55 @@ function hit_boss(bullet, boss1) {
 }
 
 //Клавиши 2
-var keyState = {};    
-addEventListener('keydown',function(e){
+var keyState = {};
+addEventListener('keydown', function (e) {
     keyState[e.key] = true;
-},true);    
-addEventListener('keyup',function(e){
+}, true);
+addEventListener('keyup', function (e) {
     keyState[e.key] = false;
-    player.velocity.x=0;
-},true);
+    player.velocity.x = 0;
+}, true);
 
 function gameLoop() {
-    if (keyState['W'] || keyState['w']){
-        if(!player.colliding(wall)&&!player.colliding(jumping)&&player.colliding(tiles)) {
-            player.velocity.y=-5;
+    if (keyState['W'] || keyState['w']) {
+        if (!player.colliding(wall) && !player.colliding(jumping) && player.colliding(tiles)) {
+            player.velocity.y = -5;
         }
         objects.forEach(object => {
-            if (player.colliding(object)&&!object.active) {
-                player.velocity.y=-5;
+            if (player.colliding(object) && !object.active) {
+                player.velocity.y = -5;
             }
         });
         if (god_mode) {
-            player.y-=5;
+            player.y -= 5;
         }
     }
-    if (keyState['S'] || keyState['s']){
+    if (keyState['S'] || keyState['s']) {
         if (god_mode) {
-            player.y+=5;
+            player.y += 5;
         }
     }
-    
-    if (keyState['A'] || keyState['a']){ 
-        player.velocity.x=-3;
+
+    if (keyState['A'] || keyState['a']) {
+        player.velocity.x = -3;
         if (god_mode) {
-            player.velocity.x=-5;
+            player.velocity.x = -5;
         }
     }
-    if (keyState['D'] || keyState['d']){ 
-        player.velocity.x=3;
+    if (keyState['D'] || keyState['d']) {
+        player.velocity.x = 3;
         if (god_mode) {
-            player.velocity.x=5;
+            player.velocity.x = 5;
         }
     }
-    if ((keyState['A'] || keyState['a'])&&(keyState['D'] || keyState['d'])){ 
-        player.velocity.x=0;
+    if ((keyState['A'] || keyState['a']) && (keyState['D'] || keyState['d'])) {
+        player.velocity.x = 0;
     }
     // redraw/reposition your object here
     // also redraw/animate any objects not controlled by the user
 
     setTimeout(gameLoop, 10);
-}    
+}
 gameLoop();
 
 //Рандом
@@ -995,22 +1016,22 @@ function map_create(restart_level, death) {
     objects.removeAll()
     if (map.levels.length == 0) {
         if (!consoleActive) {
-            difficulty+=1
-        }else{
-            difficulty=0
+            difficulty += 1
+        } else {
+            difficulty = 0
         }
         consoleActive = false
         map = json[json.info[difficulty]][0]
-        if ((!map.random_level||map.begin_level)&&(map.random_level!=undefined||map.begin_level!=undefined)) { 
+        if ((!map.random_level || map.begin_level) && (map.random_level != undefined || map.begin_level != undefined)) {
             number_level = random_level = 0
         }
         json = loadJSON('./map.json');
     }
-    if ((map.random_level||map.random_level==undefined)&&(!restart_level&&!map.begin_level)) {
-        random_level = getRandomInt(0,map.levels.length)
-            while (random_level == number_level&&map.levels.length != 1) {
-                random_level = getRandomInt(0,map.levels.length)
-            }
+    if ((map.random_level || map.random_level == undefined) && (!restart_level && !map.begin_level)) {
+        random_level = getRandomInt(0, map.levels.length)
+        while (random_level == number_level && map.levels.length != 1) {
+            random_level = getRandomInt(0, map.levels.length)
+        }
         number_level = random_level
     }
     if (map.levels[random_level] == map.levels[0]) {
@@ -1026,82 +1047,82 @@ function map_create(restart_level, death) {
         win.h = 10
         win.collider = 's'
     }
-    if (map.levels[random_level].tile_position!=undefined) {
+    if (map.levels[random_level].tile_position != undefined) {
         new Tiles(map.levels[random_level].tile, map.levels[random_level].tile_position.x, map.levels[random_level].tile_position.y, tiles.w, tiles.h);
-    }else{
+    } else {
         new Tiles(map.levels[random_level].tile, 0, 350, tiles.w, tiles.h);
     }
     for (let i = 0; i < emoji.length; i++) {
-        if (map.levels[random_level].emoji[i]!=undefined) {
+        if (map.levels[random_level].emoji[i] != undefined) {
             emoji[i].text = map.levels[random_level].emoji[i]
         }
     }
-    if (boss.length!=0) {
+    if (boss.length != 0) {
         setTimeout(() => {
-            for (let i = 0; i < scoreDeaths+2; i++) {
+            for (let i = 0; i < scoreDeaths + 2; i++) {
                 arm = new boss_arm.Sprite()
                 arm.collider = 'k'
                 arm.diameter = 20
-            if (i == 0) {
-                arm.x = boss[0].x-150
-                arm.y = boss[0].y
-            }
-            if (i == 1) {
-                arm.x = boss[0].x+150
-                arm.y = boss[0].y
-            }
-            if (i == 2) {
-                arm.x = boss[0].x
-                arm.y = boss[0].y
-            }
-            if(i>2){
-                arm.life = (scoreDeaths*50)+(i*2)
-            }
-            arm.textSize = 72
-            arm.text = '🤜'
-            boss_arm_1(arm)
+                if (i == 0) {
+                    arm.x = boss[0].x - 150
+                    arm.y = boss[0].y
+                }
+                if (i == 1) {
+                    arm.x = boss[0].x + 150
+                    arm.y = boss[0].y
+                }
+                if (i == 2) {
+                    arm.x = boss[0].x
+                    arm.y = boss[0].y
+                }
+                if (i > 2) {
+                    arm.life = (scoreDeaths * 50) + (i * 2)
+                }
+                arm.textSize = 72
+                arm.text = '🤜'
+                boss_arm_1(arm)
             }
         }, 500);
-        
+
     }
     blocks.color = blocks.stroke = 'black'
     wall.color = wall.stroke = 'gray'
-    if (map.levels[random_level].color!=undefined) {
+    if (map.levels[random_level].color != undefined) {
         blocks.color = blocks.stroke = map.levels[random_level].color.blocks
         wall.color = wall.stroke = map.levels[random_level].color.walls
     }
-    checkTiles(map.levels[random_level].tile,death)
-        try {
-            if (death == 'fall') {
-            if (map.fall_spawn&&spawns.length!=0) {
-                player.x = spawns[getRandomInt(0,spawns.length)].x; player.y = 0
-                
-            }else if(spawns.length==0){
+    checkTiles(map.levels[random_level].tile, death)
+    try {
+        if (death == 'fall') {
+            if (map.fall_spawn && spawns.length != 0) {
+                player.x = spawns[getRandomInt(0, spawns.length)].x; player.y = 0
+
+            } else if (spawns.length == 0) {
                 player.y = 0
                 player_spawn.active = true
-                player_spawn.x = player.x;player_spawn.y = player.y
-            }else{
+                player_spawn.x = player.x; player_spawn.y = player.y
+            } else {
                 player.y = 0
             }
-            }else{
-                player.x = spawns[getRandomInt(0,spawns.length)].x; player.y = spawns[getRandomInt(0,spawns.length)].y
-            }
-        } catch (error) {
-            player.x = player_spawn.x;player.y = player_spawn.y
+        } else {
+            player.x = spawns[getRandomInt(0, spawns.length)].x; player.y = spawns[getRandomInt(0, spawns.length)].y
         }
-    if (map.levels[random_level].gun_enable!=undefined) {
+    } catch (error) {
+        player.x = player_spawn.x; player.y = player_spawn.y
+    }
+    if (map.levels[random_level].gun_enable != undefined) {
         gun.visible = map.levels[random_level].gun_enable
-    }else{
+    } else {
         gun.visible = map.gun_enable
     }
-    if (map.levels[random_level].background!=undefined) {
+    if (map.levels[random_level].background != undefined) {
         backgroundMap = map.levels[random_level].background
-    }else{
+    } else {
         backgroundMap = map.background
     }
-    if (map.levels[random_level].light!=undefined) {
+    if (map.levels[random_level].light != undefined) {
         dark1.visible = !map.levels[random_level].light
-    }else{
+    } else {
         dark1.visible = !map.light
     }
     tiles.layer = 1;
@@ -1114,7 +1135,7 @@ function map_create(restart_level, death) {
     // }
 }
 
-function checkTiles(tiles,death) {
+function checkTiles(tiles, death) {
     let count = 0
     // create a new image, same dimensions as img
     for (let y = 0; y < tiles.length; y++) {
@@ -1124,15 +1145,15 @@ function checkTiles(tiles,death) {
             }
         }
     }
-    if (count == 0&&death!="fall"&&!player_spawn.active) {
+    if (count == 0 && death != "fall" && !player_spawn.active) {
         player.remove()
         console.log('%c💀Error spawn is not defined💀', 'color: red; background-color: black');
         setInterval(() => {
-            for (let i = 0; i < random(10,100); i++) {
-            textSize(random(16,64));
-            fill(random(120,255))
-            text("SyntaxError:player is not defined", random(0,canvas.w), random(0,canvas.h))
-            text("SyntaxError:spawn is not defined", random(0,canvas.w), random(0,canvas.h))
+            for (let i = 0; i < random(10, 100); i++) {
+                textSize(random(16, 64));
+                fill(random(120, 255))
+                text("SyntaxError:player is not defined", random(0, canvas.w), random(0, canvas.h))
+                text("SyntaxError:spawn is not defined", random(0, canvas.w), random(0, canvas.h))
             }
         }, 200);
     }
