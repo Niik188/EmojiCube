@@ -40,7 +40,6 @@ function setup() {
         }
     }
     createCanvas('2:1', 'fullscreen');
-    world.gravity.y = 10;
     player = new Sprite()
     player.health = 100
     player.textSize = 35
@@ -1046,6 +1045,13 @@ function map_create(restart_level, death) {
         win.w = 10
         win.h = 10
         win.collider = 's'
+    }
+    if (map.gravity!=undefined) {
+        world.gravity.x = map.gravity.x;
+        world.gravity.y = map.gravity.y;
+    }else{
+        world.gravity.x = 0;
+        world.gravity.y = 10;
     }
     if (map.levels[random_level].tile_position != undefined) {
         new Tiles(map.levels[random_level].tile, map.levels[random_level].tile_position.x, map.levels[random_level].tile_position.y, tiles.w, tiles.h);
