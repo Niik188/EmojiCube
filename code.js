@@ -261,6 +261,7 @@ function setup() {
         document.title = '🥵EmojiCube😋'
     }
 }
+
 //До загрузки
 function preload() {
     json = loadJSON('./map.json');

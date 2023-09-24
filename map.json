@@ -1,9 +1,11 @@
 {
-    "info":["easy","normal","hard","extreme","boss","anomaly"],
-    "formatIMG": "png",
-    "images":["dark"],
+    "info":["tutorial","boss","easy","normal","hard","extreme","boss","anomaly"],
+    "images":["dark.png","win_block.png"],
+    "sounds":["music/toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805.mp3","music/toby_fox_-_In_My_Way.mp3","music/Mus_waterquiet_OST.oga","music/Another_Medium.mp3","music/Field_of_hopes.oga","jump.mp3","win.mp3","win_gun.mp3","dead.mp3","fall.mp3","bullet.mp3","hit.mp3","hit_boss.mp3"],
+    "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
+        "song_main":"Another_Medium",
         "tick": false,
         "enable_scoreDeath": false,
         "background": [225,225,225,120],
@@ -13,19 +15,26 @@
         "random_level_after_die":true,
         "fall_spawn":true,
         "player_ball":false,
-        "gun_enable":false,
+        "gun_enable":true,
         "one_level":false,
         "levels":[{
-            "tile":[
+            "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","fall_barrier":"0"},
+            "effects":true,
+            "map":[
                 ".......touch a",
                 ".........block..",
                 "................",
                 "{........~.....]",
-                "================"
+                "================",
+                "................",
+                "................",
+                "...............0"
             ],
-            "emoji":["➡️"]
+            "emoji":["➡️"],
+            "tile_option":{"1":"red","3":"red","5":"red","16":"blue","18":"blue","22":"blue"}
             },
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","spike":"*"},
+             "map":[
                 "..jump over.....",
                 "....the spikes..",
                 "................",
@@ -35,7 +44,8 @@
             ],
             "emoji":["➡️","➡️"]
             },
-            {"tile_position": {"x":-140,"y":250}, "tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","jump_block":"^","wall":"|"},
+            "tile_position": {"x":-140,"y":250}, "map":[
                 "you...............Step",
                 "cant................on",
                 "jump...............the",
@@ -44,14 +54,16 @@
                 "............|.........",
                 "...........~|.........",
                 "{......~....|....~...]",
-                "|||||||||||+=========="
+                "|||||||||||^=========="
             ],
             "emoji":["🔝","➡️","➡️"]
             },
-            {"tile":[
-                "...........__.........",
-                "...........__.........",
-                "{..>...~...__....~...]",
+            {"tile_position": {"x":-60,"y":350},
+            "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","speed_right_block":">","fall_block":"-","fake_block":"|"},
+             "map":[
+                "...........||.........",
+                "...........||.........",
+                "{..>...~...||....~...]",
                 "====----------------=="
             ],
             "emoji":["➡️","➡️"]
@@ -73,7 +85,8 @@
         "begin_level":true,
         "levels":[{
             "rotationLock": false,
-            "tile":[
+            "tiles":{"block":"=","spawn":"{","win":"]","fall_barrier":"0"},
+            "map":[
                 " Welcome",
                 "      to",
                 "  trials",
@@ -83,11 +96,11 @@
                 "................",
                 "................",
                 "................",
-                ".............../"
+                "...............0"
             ]
             },
-            {
-                "tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]"},
+                "map":[
                     ".",
                     ".",
                     ".",
@@ -95,7 +108,8 @@
                     "===.=...=.====="
                 ]
             },
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]"},
+                "map":[
                 ".",
                 ".",
                 ".",
@@ -103,7 +117,8 @@
                 "====.=.===.====="
             ]
             },
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]"},
+                "map":[
                 ".",
                 ".",
                 ".",
@@ -122,14 +137,15 @@
         "gun_enable":false,
         "one_level":false,
         "levels":[{
-            "tile":[
+            "tiles":{"block":"=","spawn":"{","win":"]","spike":"*"},
+            "map":[
             ".",
             ".",
             ".",
             "{..*=*..=*=*..]",
             "==============="
             ]},
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","wall":"|","spike":"*","jump_block":"+"},"map":[
                 "......|+.......",
                 "......||.......",
                 "......||.......",
@@ -137,15 +153,15 @@
                 "=====+========="
             ]
             },
-            {"tile":[
+            {"tiles":{"spawn":"{","win":"]","fall_block":"=","wall":"|"},"map":[
                 "...............",
                 "...............",
                 "...............",
                 "{.............]",
-                "|-------------|"
+                "|=============|"
             ]
             },
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","spike":"*","jump_block":"+"},"map":[
                 "***************",
                 "...............",
                 "...............",
@@ -153,7 +169,7 @@
                 "=====+====+===="
             ]
             },
-            {"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","speed_right_block":">","wall":"|"},"map":[
                 ".",
                 ".",
                 "{",
@@ -170,25 +186,28 @@
         "gun_enable":false,
         "one_level":false,
         "levels":[{
+            "tiles":{"block":"=","spawn":"{","win":"]","spike":"*","trap_block":"-"},
             "light": true,
             "rotationLock": true,
             "debug_danger": true,
-            "tile":[
+            "map":[
             "...............",
             ".......*.......",
             ".....*....*....",
             "{....======...]",
-            "============'=="
+            "============-=="
             ]},
-            {"light": true,"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","spike":"*","jump_block":"+","trap_block":"-"},"light": true,
+                "map":[
                 "...............",
                 "...............",
                 ".....+.........",
                 "{.............]",
-                "=''='******=''="
+                "=--=-******=--="
             ]
             },
-            {"light": false,"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","spike":"*"},"light": false,
+                "map":[
                 "...............",
                 "...............",
                 "...............",
@@ -196,7 +215,8 @@
                 "==============="
             ]
             },
-            {"light": false,"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","spike":"*"},"light": false,
+                "map":[
                 "...............",
                 "...............",
                 "...............",
@@ -204,7 +224,7 @@
                 "======..======="
             ]
             },
-            {"light": false,"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","jump_block":"+","wall":"|"},"light": false,"map":[
                 "..................",
                 "..................",
                 "....|+.....|+.....",
@@ -212,12 +232,14 @@
                 "==+.............=="
             ]
             },
-            {"light": true,"tile":[
+            {"tiles":{"block":"=","spawn":"{","win":"]","spike":"*","speed_right_block":">","trap_block":"-"},
+                "light": true,
+                "map":[
                 ".",
                 ".",
                 "................",
-                "{..=..>'...=...]",
-                "=''=********=''="
+                "{..=..>-...=...]",
+                "=--=********=--="
             ]
             }
         ]
@@ -225,6 +247,7 @@
     "extreme":[{
         "title":"storage",
         "background": [155,155,155,55],
+        "song_main":"Mus_waterquiet_OST",
         "fall_spawn":true,
         "light": true,
         "player_ball":false,
@@ -234,30 +257,34 @@
         "next_level_after_fall":true,
         "gun_enable":false,
         "one_level":true,
-        "levels":[{"background": [235,235,235,10],"effects": true,"tile_position": {"x":0,"y":250},"tile":[
-            "====...|..........",
-            "|.find.|..........",
-            "|......gun........",
-            "|{.....|..........",
-            "====...|..........",
-            "===....|..........",
-            ".......|..........",
-            ".......|..........",
-            ".......|..........",
-            ".......|..........",
-            ".......|.........."
+        "levels":[{"tiles":{"block":"=","spawn":"{","wall":"|","fall_barrier":"0"},
+            "background": [235,235,235,10],
+            "effects": true,
+            "tile_position": {"x":0,"y":250},"map":[
+            "..........|...",
+            "====|||||||...",
+            "|.find....|...",
+            "|......gun|...",
+            "|{.....||||...",
+            "====...|......|...",
+            "===....|......|...",
+            ".......|......|...",
+            ".......|......|...",
+            ".......|......|...",
+            ".......|......|...",
+            ".......|......|..0"
             ],"color":{
                 "blocks":"black",
                 "walls":"rgba(0,0,0,0)"
             }},
-            {"light": false,"camera_player": true,"tile":[
-                "|||..||||||||||||||||||||||||||||",
+            {"tiles":{"block":"=","spawn":"/","wall":"|"},"light": false,"camera_player": true,"map":[
+                "|||/.||||||||||||||||||||||||||||",
                 "|................................",
                 "|................................",
                 "|................................",
                 "|================================"
             ]},
-            {"tile":[
+            {"tiles":{"block":"=","wall":"|","spawn":"{","die_block":"*","fall_block":"-","trap_block":"!","win":"]"},"map":[
                 "|||||||||.....|||||||",
                 "............{.|",
                 "..............|",
@@ -265,21 +292,22 @@
                 ".............. |",
                 ".............. |",
                 "...............]",
-                "===-'?'---'?'-=="
+                "===-!*!---!*!-=="
             ]}
         ]
     }],
     "boss":[{
         "title":"BOSS",
         "background": [55,55,55,55],
+        "song_main":"toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805",
         "fall_spawn":false,
         "light": true,
         "random_level":false,
         "gun_enable":true,
         "one_level":true,
-        "levels":[{"tile":[
+        "levels":[{"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0"},"map":[
             "|................|",
-            "|........1.......|",
+            "|........0.......|",
             "|................|",
             "|................|",
             "|{..............{|",
