@@ -1,5 +1,5 @@
 {
-    "info":["tutorial","boss","easy","normal","hard","extreme","boss","anomaly"],
+    "info":["boss","tutorial","easy","normal","hard","extreme","boss","anomaly"],
     "images":["dark.png","win_block.png"],
     "sounds":["music/toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805.mp3","music/toby_fox_-_In_My_Way.mp3","music/Mus_waterquiet_OST.oga","music/Another_Medium.mp3","music/Field_of_hopes.oga","jump.mp3","win.mp3","win_gun.mp3","dead.mp3","fall.mp3","bullet.mp3","hit.mp3","hit_boss.mp3"],
     "song_die":"toby_fox_-_In_My_Way",
@@ -305,13 +305,15 @@
         "random_level":false,
         "gun_enable":true,
         "one_level":true,
-        "levels":[{"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0"},"map":[
+        "levels":[{"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0","fall_barrier":"&"},"map":[
+            "|................|",
             "|................|",
             "|........0.......|",
             "|................|",
             "|................|",
             "|{..............{|",
-            "=================="
+            "==================",
+            " ================&"
             ],
             "color":{
                 "blocks":"black",
