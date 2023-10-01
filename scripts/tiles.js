@@ -1,7 +1,8 @@
-import { hit_boss } from "./boss.js";
+import { boss_1, hit_boss } from "./boss.js";
+import { shakeCamera } from "./camera.js";
 import { god_mode } from "./controls.js";
 import { number_level, map_create, font, playerSetTextDefult, timer1, player, bullets } from "./game.js";
-import { LoadSoundplayer, musicLevelLoad } from "./loadF.js";
+import { LoadSoundplayer, musicLevelLoad, musicLevelStop } from "./loadF.js";
 import { getRandomInt } from "./utils.js";
 export let tiles,
     objects,
@@ -120,9 +121,10 @@ export function setup_tiles() {
     boss.health = 120;
     boss.text = "😈";
     boss.tile = "";
-    boss_1();
+    boss.death = false
+    boss_1()
 
-    boss_arm = new spikes.Group();
+    boss_arm = new Group();
 
     robots = new objects.Group();
     robots.collider = "d";
@@ -192,6 +194,7 @@ export function setup_tiles() {
     win = new tiles.Group();
     win.collider = "d";
     // win.img = './img/win_block.png';
+    win.color = win.stroke = 'rgba(0,0,0,0)'
     win.textSize = 50;
     win.text = "✅";
     win.w = 50;
@@ -244,12 +247,27 @@ export function tile_functional(player, map, json, difficulty, gun) {
 
     //При косания игрока к выигрышу
     if (player.collides(win) && !win_next) {
+        if (map.win=="none") {
+            if (map.one_level == true) {
+                map.levels.splice(0, map.levels.length);
+            } else {
+                map.levels.splice(number_level, 1);
+            }
+            win.text = "✅";
+            win.collider = "d";
+            win.visible = true;
+            win.w = 50;
+            win.h = 50;
+            win_next = slowmotion = false;
+            map_create('none');
+            player.rotation = 0;
+        }else{
         player.text = player.emojis.win;
         player.color = player.emojis.win_color;
         player.death = false;
         clearTimeout(timer1);
         win_next = slowmotion = true;
-        if (!map.gun_of_win) {
+        if (map.win=="normal") {
             win.text = "✔️";
             LoadSoundplayer("/win.");
         } else {
@@ -274,9 +292,10 @@ export function tile_functional(player, map, json, difficulty, gun) {
             win.w = 50;
             win.h = 50;
             win_next = slowmotion = false;
-            map_create(false);
+            map_create('none');
             player.rotation = 0;
         }, 1000);
+        }
     }
     if (slowmotion) {
         world.step(1 / 240);
@@ -295,6 +314,9 @@ export function tile_functional(player, map, json, difficulty, gun) {
     //При косания игрока к шипам, летающим или просто роботов. При условии, что игрок не прошёл уровень
     if ((player.collides(spikes) || player.overlaps(lasers) || player.collides(robots) || player.collides(robots_fly)) && player.visible && !win_next) {
         LoadSoundplayer("/dead.");
+        if (!map.random_level_after_die) {
+            musicLevelStop()
+        }
         let skeleton = new objects.Sprite(player.x, player.y);
         skeleton.collider = "d";
         skeleton.color = "white";
@@ -343,11 +365,15 @@ export function tile_functional(player, map, json, difficulty, gun) {
             player.rotation = 0;
             slowmotion = false;
             if (map.random_level_after_die) {
-                map_create(false, "spike");
+                map_create('none', "spike");
             } else {
-                map_create(true, "spike");
+                map_create('level', "spike");
             }
         }, 2000);
+    }
+
+    if (player.collides(boss_arm)) {
+        map_create('map', "spike");
     }
 
     //При падения игрока к границам canvas
@@ -364,9 +390,9 @@ export function tile_functional(player, map, json, difficulty, gun) {
                 map.levels.splice(number_level, 1);
             }
             if (map.random_level_after_die) {
-                map_create(false, "fall");
+                map_create('none', "fall");
             }
-            map_create(true, "fall");
+            map_create('level', "fall");
             if (!map.random_level_after_die || map.enable_scoreDeath) {
                 scoreDeaths++;
             }
@@ -384,9 +410,9 @@ export function tile_functional(player, map, json, difficulty, gun) {
             map.levels.splice(number_level, 1);
         }
         if (map.random_level_after_die) {
-            map_create(false, "fall");
+            map_create('none', "fall");
         }
-        map_create(true, "fall");
+        map_create('level', "fall");
         if (!map.random_level_after_die || map.enable_scoreDeath) {
             scoreDeaths++;
         }
@@ -394,6 +420,7 @@ export function tile_functional(player, map, json, difficulty, gun) {
 
     //При косания игрока к смертельному блок или при нажатии кнопки "/". При условии, что игрок не прошёл уровень
     if ((player.colliding(die) || kb.presses("/")) && !win_next) {
+        LoadSoundplayer("/dead.");
         musicLevelLoad(json.song_die);
         textFont(font);
         for (let i = 0; i < random(10, 100); i++) {
@@ -418,7 +445,8 @@ export function tile_functional(player, map, json, difficulty, gun) {
     //При косания игрока к прыгующему блоку
     player.collides(jumping, (player1, jump) => {
         if (player1.y + player1.h < jump.y) {
-            LoadSoundplayer(2);
+            LoadSoundplayer("/jump_block.");
+            shakeCamera(200,1)
             player.vel.y = -10;
             player.text = player.emojis.schock;
             player.color = player.emojis.schock_color;
@@ -430,7 +458,8 @@ export function tile_functional(player, map, json, difficulty, gun) {
         }
         if (player1.y > jump.y + jump.h) {
             player.vel.y = 10;
-            LoadSoundplayer(2);
+            LoadSoundplayer("/jump_block.");
+            shakeCamera(200,1)
         }
     });
 
@@ -438,6 +467,8 @@ export function tile_functional(player, map, json, difficulty, gun) {
     player.collides(speedRight, (player1, speed1) => {
         if (player.x >= speed1.x) {
             player.vel.x = 12;
+            LoadSoundplayer("/jump_block.");
+            shakeCamera(200,1)
             player.text = player.emojis.schock;
             player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
@@ -456,6 +487,8 @@ export function tile_functional(player, map, json, difficulty, gun) {
     player.collides(speedLeft, (player1, speed1) => {
         if (player.x <= speed1.x) {
             player.cooldown = true;
+            LoadSoundplayer("/jump_block.");
+            shakeCamera(200,1)
             player.vel.x = -12;
             player.text = player.emojis.schock;
             player.color = player.emojis.schock_color;
@@ -474,15 +507,18 @@ export function tile_functional(player, map, json, difficulty, gun) {
     player.collides(fall, (player, fall) => {
         if (fall.collider == "static") {
             setTimeout(() => {
-                fall.collider = "d";
-                fall.life = 40;
-            }, 500);
+                LoadSoundplayer("/trap.");
+                fall.collider = "n";
+                fall.velocity.y = 2
+                fall.life = 20;
+            }, 20);
         }
     });
 
     //При косания игрока к ловушке
     player.collides(trap, (player, trap) => {
         setTimeout(() => {
+            LoadSoundplayer("/trap.");
             let spike_trap = new spikes.Sprite();
             spike_trap.x = trap.x;
             spike_trap.y = trap.y - 30;
@@ -540,6 +576,9 @@ export function tile_functional(player, map, json, difficulty, gun) {
 
     laser_traps.forEach((laser_trap) => {
         if (laser_trap.active) {
+            setTimeout(() => {
+                LoadSoundplayer("/laser.");
+            }, 2000);
             let laser = new lasers.Sprite();
             laser.direction = -90;
             laser.speed = 10;
@@ -573,15 +612,6 @@ export function tile_functional(player, map, json, difficulty, gun) {
     if (boss[0] != undefined) {
         bullets.overlaps(boss[0], hit_boss);
     }
-}
-
-//Движение boss
-async function boss_1() {
-    await boss.moveTo(100, 200, 8);
-    await delay(30);
-    await boss.moveTo(750, 200, 8);
-    await delay(30);
-    boss_1();
 }
 
 export function load_tiles(level) {

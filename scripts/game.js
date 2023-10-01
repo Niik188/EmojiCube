@@ -2,8 +2,9 @@ import { boss_ready } from "./boss.js";
 import { cameraPosition, shakeCamera } from "./camera.js";
 import { controls, p5controls, god_mode, chancePlayerSpeed } from "./controls.js";
 import { effects_draw, effects_start } from "./lighting.js";
-import { images, loadFiles, LoadSoundplayer, musicLevelLoad, panelMusicEnable, sounds } from "./loadF.js";
-import { boss, chanceColorTiles, emoji, load_tiles, objects, scoreDeaths, setup_tiles, spawns, tiles, tile_functional, win } from "./tiles.js";
+import { images, LoadSoundplayer, musicLevelEnable, musicLevelLoad, musicLevelStop, panelMusicEnable, sounds } from "./loadF.js";
+import { window_canvas } from "./menu.js";
+import { boss, boss_arm, chanceColorTiles, emoji, load_tiles, objects, scoreDeaths, setup_tiles, spawns, tiles, tile_functional, win } from "./tiles.js";
 import { getRandomInt } from "./utils.js";
 export let player;
 let player_spawn = { active: false, x: 0, y: 0 };
@@ -26,9 +27,8 @@ export let font;
 export let timer1;
 
 //Запуск
-function setup() {
-    loadFiles(json);
-    createCanvas("2:1", "fullscreen");
+export function setup() {
+    createCanvas(window_canvas, "fullscreen");
 
     player = new Sprite();
     player.health = 100;
@@ -50,64 +50,64 @@ function setup() {
     player.death = false;
     player.cooldown = false;
     //controls(player,god_mode)
-    let random_count = getRandomInt(0, 10);
-    if (random_count <= 3 && random_count >= 2) {
-        document.title = "🥵EmojiCube😋";
-        playerTextdefult = "😋";
-        player.emojis = {
-            win: "🥵",
-            schock: "😳",
-            unruhe: ["🤨", "😳", "🥵"],
-            cheat: "🤑",
-            win_glitch: "😰",
-            win_color: "#F03A17",
-            schock_color: "#FFC83D",
-            unruhe_color: ["#FFC83D", "#FFC83D", "#F03A17"],
-        };
-    } else if (random_count >= 6 && random_count <= 8) {
-        document.title = "🤓Cube";
-        playerTextdefult = "☝️🤓ᅟ";
-        player.emojis = {
-            win: "📙😄ᅟ",
-            schock: "🖐️😲🖐️",
-            unruhe: ["☝️😟ᅟ", "☝️😨ᅟ", "😱"],
-            cheat: "☹️",
-            win_glitch: "😰",
-            win_color: "#FFC83D",
-            schock_color: "#FFC83D",
-            unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
-        };
-    } else if (random_count >= 9) {
-        document.title = "(^o^)Cube";
-        player.textSize = 24;
-        player.color = "white";
-        playerTextdefult = "◕_◕";
-        playerColordefult = "white";
-        player.emojis = {
-            win: " ͡° ͜ʖ ͡°",
-            schock: "｡>﹏<｡",
-            unruhe: ["ಠ_ಠ", "ŏ﹏ŏ", "ó_ò"],
-            cheat: "^o^",
-            win_glitch: "｡ŏ﹏ŏ",
-            win_color: "white",
-            schock_color: "white",
-            unruhe_color: ["white", "white", "white"],
-        };
-    } else if (random_count <= 1) {
-        document.title = "😏EmojiCube";
-        player.textSize = 32;
-        playerTextdefult = "😏";
-        player.emojis = {
-            win: "😎",
-            schock: "😵",
-            unruhe: ["🤫", "☹️", "💀"],
-            cheat: "👁️",
-            win_glitch: "😰",
-            win_color: "#FFC83D",
-            schock_color: "#FFC83D",
-            unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
-        };
-    }
+    //let random_count = getRandomInt(0, 10);
+    // if (random_count <= 3 && random_count >= 2) {
+    //     document.title = "🥵EmojiCube😋";
+    //     playerTextdefult = "😋";
+    //     player.emojis = {
+    //         win: "🥵",
+    //         schock: "😳",
+    //         unruhe: ["🤨", "😳", "🥵"],
+    //         cheat: "🤑",
+    //         win_glitch: "😰",
+    //         win_color: "#F03A17",
+    //         schock_color: "#FFC83D",
+    //         unruhe_color: ["#FFC83D", "#FFC83D", "#F03A17"],
+    //     };
+    // } else if (random_count >= 6 && random_count <= 8) {
+    //     document.title = "🤓Cube";
+    //     playerTextdefult = "☝️🤓ᅟ";
+    //     player.emojis = {
+    //         win: "📙😄ᅟ",
+    //         schock: "🖐️😲🖐️",
+    //         unruhe: ["☝️😟ᅟ", "☝️😨ᅟ", "😱"],
+    //         cheat: "☹️",
+    //         win_glitch: "😰",
+    //         win_color: "#FFC83D",
+    //         schock_color: "#FFC83D",
+    //         unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
+    //     };
+    // } else if (random_count >= 9) {
+    //     document.title = "(^o^)Cube";
+    //     player.textSize = 24;
+    //     player.color = "white";
+    //     playerTextdefult = "◕_◕";
+    //     playerColordefult = "white";
+    //     player.emojis = {
+    //         win: " ͡° ͜ʖ ͡°",
+    //         schock: "｡>﹏<｡",
+    //         unruhe: ["ಠ_ಠ", "ŏ﹏ŏ", "ó_ò"],
+    //         cheat: "^o^",
+    //         win_glitch: "｡ŏ﹏ŏ",
+    //         win_color: "white",
+    //         schock_color: "white",
+    //         unruhe_color: ["white", "white", "white"],
+    //     };
+    // } else if (random_count <= 1) {
+    //     document.title = "😏EmojiCube";
+    //     player.textSize = 32;
+    //     playerTextdefult = "😏";
+    //     player.emojis = {
+    //         win: "😎",
+    //         schock: "😵",
+    //         unruhe: ["🤫", "☹️", "💀"],
+    //         cheat: "👁️",
+    //         win_glitch: "😰",
+    //         win_color: "#FFC83D",
+    //         schock_color: "#FFC83D",
+    //         unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
+    //     };
+    // }
     player.text = playerTextdefult;
 
     gun = new Sprite();
@@ -145,17 +145,18 @@ function setup() {
 }
 
 //До загрузки
-function preload() {
+export function preload() {
     json = loadJSON("./map.json");
     //background(canvas.toDataURL())
     light = loadImage("./img/light.png");
     light1 = loadImage("./img/light1.png");
     font = loadFont("./fonts/typewriter.ttf");
+    
 }
 
-function windowResized() {
+export function windowResized() {
     setTimeout(() => {
-        createCanvas("2:1", "fullscreen");
+        createCanvas(window_canvas, "fullscreen");
         effects_start(dark1, player);
     }, 60);
 }
@@ -191,7 +192,8 @@ export function playerSetTextDefult(timer, win_glitch) {
 }
 
 let rotate1;
-function draw() {
+let timer_bullets;
+export function draw() {
     if (backgroundMap.img != undefined) {
         imageMode(CORNERS);
         background(images[backgroundMap.img - 1]);
@@ -219,7 +221,7 @@ function draw() {
                 bullet.y = gun.y;
             }
             bullet.direction = bullet.angleTo(mouse) + random(-bullets.length + 10, bullets.length + 10);
-            shakeCamera(0.6);
+            shakeCamera(200,0.6,true,true);
             LoadSoundplayer("/bullet.");
         }
     }
@@ -283,24 +285,43 @@ function draw() {
 //Создание и перезапуск уровня
 export function map_create(restart_level, death) {
     chancePlayerSpeed(3);
+    
     background(0);
     tiles.removeAll();
     objects.removeAll();
+    boss_arm.removeAll();
     if (map.levels.length == 0) {
         difficulty += 1;
         map = json[json.info[difficulty]][0];
         if ((!map.random_level || map.begin_level) && (map.random_level != undefined || map.begin_level != undefined)) {
             number_level = random_level = 0;
         }
-        musicLevelLoad(map.song_main);
+        musicLevelLoad(map.song_main)
         json = loadJSON("./map.json");
     }
-    if ((map.random_level || map.random_level == undefined) && !restart_level && !map.begin_level) {
+    if (restart_level == 'map') {
+        map = json[json.info[difficulty]][0];
+        if ((!map.random_level || map.begin_level) && (map.random_level != undefined || map.begin_level != undefined)) {
+            number_level = random_level = 0;
+        }
+        json = loadJSON("./map.json");
+    }
+    if (restart_level != 'none') {
+        musicLevelLoad(map.song_main)
+    }
+    if ((map.random_level || map.random_level == undefined) && restart_level == 'none' && !map.begin_level) {
         random_level = getRandomInt(0, map.levels.length);
         while (random_level == number_level && map.levels.length != 1) {
             random_level = getRandomInt(0, map.levels.length);
         }
         number_level = random_level;
+    }
+    if (!musicLevelEnable(map.song_main)) {
+        musicLevelLoad(map.song_main)
+    }
+    if (map.levels[random_level].music_enable!=undefined&&!map.levels[random_level].music_enable) {
+        console.log(map.levels[random_level].music_enable)
+        musicLevelStop()
     }
     load_tiles(map.levels[random_level]);
     if (map.levels[random_level] == map.levels[0]) {
@@ -313,10 +334,14 @@ export function map_create(restart_level, death) {
         player.w = 38;
         player.h = 38;
     }
-    if (map.gun_of_win) {
+    if (map.win == "gun") {
         win.text = "🔫";
         win.w = 10;
         win.h = 10;
+        win.collider = "s";
+    }
+    if (map.win == "none") {
+        win.text = " ";
         win.collider = "s";
     }
     world.gravity.x = 0;
@@ -397,8 +422,3 @@ function checkTiles(tiles, death) {
         }, 200);
     }
 }
-
-window.preload = preload;
-window.setup = setup;
-window.draw = draw;
-window.windowResized = windowResized;

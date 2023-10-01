@@ -1,7 +1,5 @@
 {
     "info":["boss","tutorial","easy","normal","hard","extreme","boss","anomaly"],
-    "images":["dark.png","win_block.png"],
-    "sounds":["music/toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805.mp3","music/toby_fox_-_In_My_Way.mp3","music/Mus_waterquiet_OST.oga","music/Another_Medium.mp3","music/Field_of_hopes.oga","jump.mp3","win.mp3","win_gun.mp3","dead.mp3","fall.mp3","bullet.mp3","hit.mp3","hit_boss.mp3"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
@@ -10,9 +8,9 @@
         "enable_scoreDeath": false,
         "background": [225,225,225,120],
         "light": true,
-        "gun_of_win":false,
+        "win":"normal",
         "random_level":false,
-        "random_level_after_die":true,
+        "random_level_after_die":false,
         "fall_spawn":true,
         "player_ball":false,
         "gun_enable":true,
@@ -75,7 +73,7 @@
         "tick": false,
         "background": [255,255,255, 150],
         "light": true,
-        "gun_of_win":false,
+        "win":"normal",
         "random_level":true,
         "random_level_after_die":true,
         "fall_spawn":true,
@@ -251,7 +249,7 @@
         "fall_spawn":true,
         "light": true,
         "player_ball":false,
-        "gun_of_win":true,
+        "win":"gun",
         "random_level":false,
         "random_level_after_die":true,
         "next_level_after_fall":true,
@@ -301,25 +299,43 @@
         "background": [55,55,55,55],
         "song_main":"toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805",
         "fall_spawn":false,
+        "win":"none",
         "light": true,
         "random_level":false,
         "gun_enable":true,
-        "one_level":true,
-        "levels":[{"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0","fall_barrier":"&"},"map":[
-            "|................|",
-            "|................|",
-            "|........0.......|",
-            "|................|",
-            "|................|",
-            "|{..............{|",
-            "==================",
-            " ================&"
+        "one_level":false,
+        "levels":[{"tile_position": {"x":-500,"y":350},
+            "tiles":{"block":"=","wall":"|","spike":"*","spawn":"{","fall_block":"-","trap_block":"1","win":"0","fall_barrier":"&"},
+            "music_enable":false,
+            "map":[
+            "|............................|",
+            "|............................0",
+            "|............................0",
+            "|............................0",
+            "|............................0",
+            "|{........*..........*.......0",
+            "=============------===========",
+            " ============111111==========&"
             ],
             "color":{
                 "blocks":"black",
                 "walls":"black"
-            }
-        }
+            }},
+            {"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0","fall_barrier":"&"},
+            "map":[
+                "|................|",
+                "|................|",
+                "|........0.......|",
+                "|................|",
+                "|................|",
+                "|{..............{|",
+                "==================",
+                " ================"
+                ],
+                "color":{
+                    "blocks":"black",
+                    "walls":"black"
+            }}
         ]
     }],
     "anomaly":[{

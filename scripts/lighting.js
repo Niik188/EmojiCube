@@ -26,7 +26,7 @@ export function effects_draw(dark1,level,player) {
     }
     if (level.effects) {
         if (effs.length<1000) {
-            let eff = new effs.Sprite(random(-100, camera.x+550), 0)
+            let eff = new effs.Sprite(random(-100, camera.x+550), -canvas.height)
             eff.collider = 'd'
             eff.layer = -2
             eff.diameter = 0
@@ -37,7 +37,7 @@ export function effects_draw(dark1,level,player) {
             eff.text = '🌀'
             eff.life = 120
         }
-        shakeCamera(0.02)
+        shakeCamera(1000,0.01,true,true)
     }
     effs.collides(allSprites,(eff,tile)=>{
         setTimeout(() => {

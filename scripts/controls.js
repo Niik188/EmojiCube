@@ -1,5 +1,7 @@
+import { shakeCamera } from "./camera.js";
 import { map_create, playerSetTextDefult } from "./game.js";
 import { LoadSoundplayer, sounds } from "./loadF.js";
+import { setup_game } from "./menu.js";
 import { jumping, objects, speedLeft, speedRight, spikes, tiles, wall } from "./tiles.js";
 export let god_mode = false;
 export let speedPlayer = 2
@@ -10,6 +12,7 @@ let keys = {
     right: ["KeyD", "ArrowRight"],
     noclip: ["KeyV"],
     restart: ["KeyR"],
+    menu: ["KeyM"],
     restartCoolDown: false,
 };
 
@@ -31,10 +34,13 @@ export function controls(player) {
             player.sleeping = true;
             keys.restartCoolDown = true;
             player.rotation = 0;
-            map_create(true);
+            map_create('level');
             setTimeout(() => {
                 keys.restartCoolDown = false;
             }, 500);
+        }
+        if (e.code == keys.menu && !keys.restartCoolDown) {
+            location.reload()
         }
     });
     addEventListener(
@@ -60,6 +66,7 @@ export function controls(player) {
             if (keyState[keys.up[i]]) {
                 if (!player.colliding(wall) && !player.colliding(jumping) && player.colliding(tiles)) {
                     player.velocity.y = -5;
+                    shakeCamera(100,0.1,false,true)
                     LoadSoundplayer("/jump.");
                 }
                 objects.forEach((object) => {
