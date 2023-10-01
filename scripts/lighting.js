@@ -1,12 +1,17 @@
 import { shakeCamera } from "./camera.js";
 import { light } from "./game.js";
+import { window_canvas } from "./menu.js";
 
 var dark
 let effs
 
 export function effects_start(dark1,player) {
     effs = new Group()
-    dark = createImage(canvas.w*4, canvas.h*8);
+    if (window_canvas.w>window_canvas.h) {
+        dark = createImage(canvas.w*4, canvas.h*4);
+    }else{
+        dark = createImage(canvas.w*4, canvas.h*8);
+    }
     dark.loadPixels();
     for (let x = 0; x < dark.width; x++) {
     for (let y = 0; y < dark.height; y++) {
@@ -37,7 +42,7 @@ export function effects_draw(dark1,level,player) {
             eff.text = '🌀'
             eff.life = 120
         }
-        shakeCamera(1000,0.01,true,true)
+        shakeCamera(1000,0.01,true,false)
     }
     effs.collides(allSprites,(eff,tile)=>{
         setTimeout(() => {

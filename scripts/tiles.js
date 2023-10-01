@@ -41,6 +41,37 @@ export function setup_tiles() {
     tiles.w = 50;
     tiles.h = 50;
 
+    alphabet_letters = new tiles.Group();
+    alphabet.forEach((letter) => {
+        let lettero = new alphabet_letters.Group();
+        lettero.type = "letter";
+        lettero.collider = "s";
+        lettero.health = 100
+        lettero.color = `rgba(0,0,0,0)`;
+        lettero.stroke = `rgba(0,0,0,0)`;
+        lettero.w = 20;
+        lettero.h = 20;
+        lettero.textSize = 40;
+        lettero.tile = '';
+        lettero.text = letter;
+        if (
+            letter == "e" ||
+            letter == "o" ||
+            letter == "c" ||
+            letter == "q" ||
+            letter == "о" ||
+            letter == "с" ||
+            letter == "р" ||
+            letter == "э" ||
+            letter == "е"
+        ) {
+            lettero.diameter = 20;
+        }
+        if (letter == "i" || letter == "l") {
+            lettero.w = 10;
+        }
+    });
+
     objects = new Group();
     objects.w = 50;
     objects.h = 50;
@@ -236,18 +267,30 @@ async function move_ultra_robot_fly() {
     move_robot_fly();
 }
 
-export function tile_functional(player, map, json, difficulty, gun) {
-    player.collides(alphabet_letters, (player, tile) => {
-        if (tile.type == "letter" && tile.collider == "static" && getRandomInt(0, 100) == getRandomInt(0, 50)) {
-            tile.collider = "d";
-            tile.textColor = "rgb(100,100,100)";
-            tile.life = getRandomInt(1500, 1560);
+export function tile_functional(player, map, json, difficulty, gun, bullets) {
+    player.collides(alphabet_letters, (player, letter) => {
+        if (letter.type == "letter" && letter.collider == "static") {
+            letter.health-=getRandomInt(0, 50)
+        }
+    });
+
+    bullets.collides(alphabet_letters, (b, letter) => {
+        if (letter.type == "letter" && letter.collider == "static") {
+            letter.health-=getRandomInt(0, 80)
+        }
+    });
+
+    alphabet_letters.forEach(letter => {
+        if (letter.type == "letter" && letter.collider == "static" && letter.health <= 0) {
+            letter.collider = "d";
+            letter.textColor = "rgb(100,100,100)";
+            letter.life = getRandomInt(1500, 1560);
         }
     });
 
     //При косания игрока к выигрышу
     if (player.collides(win) && !win_next) {
-        if (map.win=="none") {
+        if (map.win=="none"||(map.levels[number_level].win != undefined&&map.levels[number_level].win=="none")) {
             if (map.one_level == true) {
                 map.levels.splice(0, map.levels.length);
             } else {
@@ -267,12 +310,22 @@ export function tile_functional(player, map, json, difficulty, gun) {
         player.death = false;
         clearTimeout(timer1);
         win_next = slowmotion = true;
-        if (map.win=="normal") {
-            win.text = "✔️";
-            LoadSoundplayer("/win.");
-        } else {
-            win.visible = false;
-            LoadSoundplayer("/win_gun.");
+        if (map.levels[number_level].win != undefined) {
+            if (map.levels[number_level].win=="normal") {
+                win.text = "✔️";
+                LoadSoundplayer("/win.");
+            }else{
+                win.visible = false;
+                LoadSoundplayer("/win_gun.");
+            }
+        }else{
+            if (map.win=="normal") {
+                win.text = "✔️";
+                LoadSoundplayer("/win.");
+            }else{
+                win.visible = false;
+                LoadSoundplayer("/win_gun.");
+            }
         }
         win.w = 1;
         win.h = 1;
@@ -373,7 +426,7 @@ export function tile_functional(player, map, json, difficulty, gun) {
     }
 
     if (player.collides(boss_arm)) {
-        map_create('map', "spike");
+            map_create('map')
     }
 
     //При падения игрока к границам canvas
@@ -615,6 +668,9 @@ export function tile_functional(player, map, json, difficulty, gun) {
 }
 
 export function load_tiles(level) {
+    for (let i = 0; i < alphabet_letters.subgroups.length; i++) {
+        alphabet_letters.subgroups[i].tile = alphabet[i]
+    }
     blocks.tile = level.tiles.block;
     wall.tile = level.tiles.wall;
     spawns.tile = level.tiles.spawn;
@@ -635,35 +691,6 @@ export function load_tiles(level) {
     button.tile = level.tiles.button;
     fake.tile = level.tiles.fake_block;
     die.tile = level.tiles.die_block;
-    alphabet_letters = new tiles.Group();
-    alphabet.forEach((letter) => {
-        let lettero = new alphabet_letters.Group();
-        lettero.type = "letter";
-        lettero.collider = "s";
-        lettero.color = `rgba(0,0,0,0)`;
-        lettero.stroke = `rgba(0,0,0,0)`;
-        lettero.w = 20;
-        lettero.h = 20;
-        lettero.textSize = 40;
-        lettero.tile = letter;
-        lettero.text = letter;
-        if (
-            letter == "e" ||
-            letter == "o" ||
-            letter == "c" ||
-            letter == "q" ||
-            letter == "о" ||
-            letter == "с" ||
-            letter == "р" ||
-            letter == "э" ||
-            letter == "е"
-        ) {
-            lettero.diameter = 20;
-        }
-        if (letter == "i" || letter == "l") {
-            lettero.w = 10;
-        }
-    });
 }
 
 export function chanceColorTiles(level) {

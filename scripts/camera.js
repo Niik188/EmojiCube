@@ -27,12 +27,12 @@ export function cameraPosition(camera, player, map, canvas, number_level) {
         }
         let count_shake = 0
         while (count_shake<3) {
-            if (shake.x) {
-                    camera.x += random(-shakePower, shakePower);
-                }
-            if (shake.y) {
-                    camera.y += random(-shakePower, shakePower);
-                }
+            if (shake.x==undefined||shake.x) {
+                camera.x += random(-shakePower, shakePower);
+            }
+            if (shake.y==undefined||shake.y) {
+                camera.y += random(-shakePower, shakePower);
+            }
             count_shake++
         }
     }
@@ -40,13 +40,10 @@ export function cameraPosition(camera, player, map, canvas, number_level) {
 
 export function shakeCamera(time,power,x,y) {
     shakeCam = true;
-    if(x==undefined&&y==undefined&&shake.x==[]&&shake.y==[]){
         shake.x = true
         shake.y = true
-    }else if(shake.x==[]&&shake.y==[]){
         shake.x = x
         shake.y = y
-    }
     shakePower += power;
     setTimeout(() => {
         shake = {x:[],y:[]}

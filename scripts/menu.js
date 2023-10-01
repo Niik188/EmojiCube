@@ -3,7 +3,7 @@ import { loadFiles } from './loadF.js';
 
 let button;
 let json_load;
-export let window_canvas = "5.6:4"
+export let window_canvas = {w:5.6,h:4}
 export function setup_game(scene1) {
     window.draw=()=>{return false;};
     window.windowResized=()=>{return false;};
@@ -13,7 +13,7 @@ export function setup_game(scene1) {
             setup()
             window.draw = draw;
             window.windowResized = windowResized;
-        }, 200);
+        }, 500);
     }else{
         // setTimeout(() => {
         //     setup_menu()
@@ -28,7 +28,7 @@ function preload_menu() {
 
 function setup_menu() {
     loadFiles(json_load);
-    createCanvas(window_canvas, "fullscreen");
+    createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
     button = new Sprite()
     button.w = 550
     button.textSize = 32

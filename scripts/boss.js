@@ -22,7 +22,7 @@ export function hit_boss(bullet, boss1) {
         boss1.health -= 5;
         if (boss[0].health <= 80 && random_attack < 5) {
             random_attack = getRandomInt(0, 10);
-            speed_arm = getRandomInt(5, 15);
+            speed_arm += 1;
             chancePlayerSpeed(4);
         }
         if (boss1.health < 20) {
@@ -34,11 +34,8 @@ export function hit_boss(bullet, boss1) {
             die1.life = 100;
         }
         if (boss1.health <= 0) {
-            if (!boss1.visible) {
-                LoadSoundplayer("/invisible.");
-                boss1.visible = true;
-                boss1.death = true
-            }
+            boss1.visible = true;
+            boss1.death = true
             musicLevelLoad("")
             boss_actived = false
             boss1.text = "👿"
@@ -71,7 +68,7 @@ export function hit_boss(bullet, boss1) {
                 new win.Sprite(boss1.x, boss1.y + 50);
             }
             boss1.remove();
-            }, 1000);
+            }, 2000);
         }
     }
     // bullet.remove()

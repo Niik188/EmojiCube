@@ -28,7 +28,7 @@ export let timer1;
 
 //Запуск
 export function setup() {
-    createCanvas(window_canvas, "fullscreen");
+    createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
 
     player = new Sprite();
     player.health = 100;
@@ -156,7 +156,7 @@ export function preload() {
 
 export function windowResized() {
     setTimeout(() => {
-        createCanvas(window_canvas, "fullscreen");
+        createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
         effects_start(dark1, player);
     }, 60);
 }
@@ -237,7 +237,7 @@ export function draw() {
     }
     effects_draw(dark1, map.levels[random_level]);
     p5controls(player, map.levels[random_level]);
-    tile_functional(player, map, json, difficulty, gun);
+    tile_functional(player, map, json, difficulty, gun, bullets);
     cameraPosition(camera, player, map, canvas, number_level);
     //GUI
     push();
@@ -334,15 +334,28 @@ export function map_create(restart_level, death) {
         player.w = 38;
         player.h = 38;
     }
-    if (map.win == "gun") {
+    if (map.levels[random_level].win != undefined) {
+        if (map.levels[random_level].win == "gun") {
+            win.text = "🔫";
+            win.w = 10;
+            win.h = 10;
+            win.collider = "s";
+        }
+        if (map.levels[random_level].win == "none") {
+            win.text = " ";
+            win.collider = "s";
+        }
+    }else{
+        if (map.win == "gun") {
         win.text = "🔫";
         win.w = 10;
         win.h = 10;
         win.collider = "s";
-    }
-    if (map.win == "none") {
+        }
+        if (map.win == "none") {
         win.text = " ";
         win.collider = "s";
+        }
     }
     world.gravity.x = 0;
     world.gravity.y = 10;

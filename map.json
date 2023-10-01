@@ -28,8 +28,7 @@
                 "................",
                 "...............0"
             ],
-            "emoji":["➡️"],
-            "tile_option":{"1":"red","3":"red","5":"red","16":"blue","18":"blue","22":"blue"}
+            "emoji":["➡️"]
             },
             {"tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","spike":"*"},
              "map":[
@@ -43,7 +42,7 @@
             "emoji":["➡️","➡️"]
             },
             {"tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","jump_block":"^","wall":"|"},
-            "tile_position": {"x":-140,"y":250}, "map":[
+            "tile_position": {"x":-300,"y":250}, "map":[
                 "you...............Step",
                 "cant................on",
                 "jump...............the",
@@ -56,7 +55,7 @@
             ],
             "emoji":["🔝","➡️","➡️"]
             },
-            {"tile_position": {"x":-60,"y":350},
+            {"tile_position": {"x":-300,"y":350},
             "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","speed_right_block":">","fall_block":"-","fake_block":"|"},
              "map":[
                 "...........||.........",
@@ -299,18 +298,19 @@
         "background": [55,55,55,55],
         "song_main":"toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805",
         "fall_spawn":false,
-        "win":"none",
+        "win":"normal",
         "light": true,
         "random_level":false,
         "gun_enable":true,
         "one_level":false,
         "levels":[{"tile_position": {"x":-500,"y":350},
-            "tiles":{"block":"=","wall":"|","spike":"*","spawn":"{","fall_block":"-","trap_block":"1","win":"0","fall_barrier":"&"},
+            "tiles":{"block":"=","emoji":"2","wall":"|","spike":"*","spawn":"{","fall_block":"-","trap_block":"1","win":"0","fall_barrier":"&"},
             "music_enable":false,
+            "win":"none",
             "map":[
             "|............................|",
             "|............................0",
-            "|............................0",
+            "|....................boss.2..0",
             "|............................0",
             "|............................0",
             "|{........*..........*.......0",
@@ -320,8 +320,10 @@
             "color":{
                 "blocks":"black",
                 "walls":"black"
-            }},
+            },
+            "emoji":["➡️"]},
             {"tiles":{"block":"=","wall":"|","spawn":"{","boss":"0","fall_barrier":"&"},
+            "music_enable":true,
             "map":[
                 "|................|",
                 "|................|",

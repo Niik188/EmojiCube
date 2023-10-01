@@ -57,7 +57,7 @@ export function musicLevelLoad(sound_name) {
     sounds.forEach((sound,index) => {
         if (sound_name != undefined&&typeof sound_name === 'string') {
         sound.stop();
-        if (sound.src!=undefined&&sound.src.indexOf("/"+sound_name+".")!=-1&&sound!=sound_now) {
+        if (sound.src!=undefined&&sound.src.indexOf("/"+sound_name+".")!=-1) {
         sound.play()
         sound.loop()
         if (sound.elt.played) {
@@ -67,9 +67,6 @@ export function musicLevelLoad(sound_name) {
                 panelMusicEnable = false
             }, 5000);
         }
-        }
-        if(sound==sound_now){
-            sound.play()
         }
         }else if(sound==sound_now){
             sound.play()
