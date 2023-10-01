@@ -1,4 +1,4 @@
 # EmojiCube
 test = 4
-edit = 6
+edit = 7
 fix = 4
