@@ -5,11 +5,10 @@ let button;
 let json_load;
 let menu_objects;
 let scene;
-let div;
-export let window_canvas = {w:5.6,h:4}
+let font_menu;
+export let window_canvas = {w:4,h:3}
 export function setup_game() {
     button.hide();
-    div.position(canvas.w-canvas.w/1.3, 120);
     window.draw=()=>{return false;};
     window.windowResized=()=>{return false;}
         preload()
@@ -22,17 +21,12 @@ export function setup_game() {
 
 function preload_menu() {
     json_load = loadJSON("./loadFiles.json");
+    font_menu = loadFont("./fonts/typewriter.ttf");
 }
 
 function setup_menu() {
     loadFiles(json_load);
     createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
-    div = createDiv('this is some text');
-    div.style('color', 'rgb(255,255,255)');
-    div.style('padding', '30px');
-    div.style('font-size', '16px');
-    div.style('background-color', 'rgb(0,0,0)');
-    div.position(canvas.w-canvas.w/1.3, 120);
     button = createButton("My Level")
     button.position(500, 262.5);
     button.size(240);

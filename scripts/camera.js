@@ -1,11 +1,20 @@
 let shakeCam = false;
 let shake = {x:[],y:[]}
 let shakePower = 0;
+let scaleFactor = 0.2
+let pixelsWidth;
 
 export function cameraPosition(camera, player, map, canvas, number_level) {
-    camera.zoom = Math.abs(canvas.w * 1.0007 - canvas.w);
-    camera.x = canvas.w / 0.85 - canvas.w;
-    camera.y = canvas.h / 0.7 - canvas.h;
+    pixelsWidth = canvas.w
+    camera.zoom = scaleFactor * (pixelsWidth / 256);
+    let camerYoff = 10.0;
+    let lagFactor = 0.05;
+    let dx = player.x+50 - camera.x + mouse.x/8;
+    let dy = player.y- camerYoff - camera.y + mouse.y/10;
+    camera.x += dx * lagFactor;
+    camera.y += dy * lagFactor/2;
+    // camera.x = canvas.w / 0.85 - canvas.w;
+    // camera.y = canvas.h / 0.7 - canvas.h;
     if (canvas.w < 1200) {
         camera.x = player.x;
     }

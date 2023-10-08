@@ -1,5 +1,5 @@
 {
-    "info":["tutorial","easy","normal","hard","extreme","boss","anomaly"],
+    "info":["boss","tutorial","easy","normal","hard","extreme","boss","anomaly"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",

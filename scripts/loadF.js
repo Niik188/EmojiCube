@@ -65,7 +65,7 @@ export function musicLevelLoad(sound_name) {
             sound_now = sound
             setTimeout(() => {
                 panelMusicEnable = false
-            }, 5000);
+            }, 1000);
         }
         }
         }else if(sound==sound_now){

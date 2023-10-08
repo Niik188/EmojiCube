@@ -1,8 +1,9 @@
 import { boss_ready } from "./boss.js";
 import { cameraPosition, shakeCamera } from "./camera.js";
-import { controls, p5controls, god_mode, chancePlayerSpeed } from "./controls.js";
+import { controls, p5controls, chancePlayerSpeed } from "./controls.js";
+import { GUI_render, GUI_setup } from "./gui.js";
 import { effects_draw, effects_start } from "./lighting.js";
-import { images, LoadSoundplayer, musicLevelEnable, musicLevelLoad, musicLevelStop, panelMusicEnable, sounds } from "./loadF.js";
+import { images, LoadSoundplayer, musicLevelEnable, musicLevelLoad, musicLevelStop} from "./loadF.js";
 import { window_canvas } from "./menu.js";
 import { boss, boss_arm, chanceColorTiles, emoji, load_tiles, objects, scoreDeaths, setup_tiles, spawns, tiles, tile_functional, win } from "./tiles.js";
 import { getRandomInt } from "./utils.js";
@@ -20,9 +21,7 @@ let random_level = 0;
 export let pauseGame = false;
 let json;
 let dark1;
-let dark;
 export let light, light1;
-let date;
 export let font;
 export let timer1;
 
@@ -136,6 +135,7 @@ export function setup() {
 
     effects_start(dark1, player);
     controls(player);
+    GUI_setup();
     difficulty = 0;
     map = json[json.info[difficulty]][0];
     map_create();
@@ -235,51 +235,11 @@ export function draw() {
         gun.mirror.y = true;
         rotate1 = 150;
     }
+    GUI_render(map,scoreDeaths,boss)
     effects_draw(dark1, map.levels[random_level]);
     p5controls(player, map.levels[random_level]);
     tile_functional(player, map, json, difficulty, gun, bullets);
     cameraPosition(camera, player, map, canvas, number_level);
-    //GUI
-    push();
-    textFont(font);
-    textSize(24);
-    fill(0, 0, 0);
-    rect(4, 2, 300, 55);
-    fill(255, 255, 255);
-    if (panelMusicEnable) {
-        fill(0, 0, 0);
-        rect(canvas.w - 550, 10, 500, 55);
-        fill(255, 255, 255);
-        text("Now playing music: " + map.song_main, canvas.w - 500, 40);
-    }
-    date = new Date();
-    try {
-        if (map.levels.length <= 1) {
-            text(map.title + " Deaths: " + scoreDeaths, 10, 20);
-        } else {
-            text(map.title + " " + map.levels.length + " Deaths: " + scoreDeaths, 10, 20);
-        }
-        text(date.toLocaleTimeString() + " " + date.toLocaleDateString(), 10, 40);
-        if (boss.length != 0) {
-            fill(255, 255, 255);
-            textFont("Arial");
-            let text1 = [];
-            for (let i = 0; i < boss[0].health / 10; i++) {
-                text1.push("❤️");
-            }
-            if (playerTextdefult == "😋") {
-                text(" BOSS of the GYM: " + text1.join(""), 4, 90);
-            } else if (playerTextdefult == "☝️🤓ᅟ") {
-                text(" Bully: " + text1.join(""), 4, 90);
-            } else {
-                text(" BOSS: " + text1.join(""), 4, 90);
-            }
-        }
-    } catch (err) {
-        text(err + " " + "♾️", 10, 20);
-    }
-
-    pop();
 }
 
 //Создание и перезапуск уровня

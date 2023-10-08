@@ -4,6 +4,7 @@ import { player } from "./game.js";
 import { LoadSoundplayer, musicLevelLoad } from "./loadF.js";
 import { boss, boss_arm, die, objects, scoreDeaths, spawns, win } from "./tiles.js";
 import { getRandomInt } from "./utils.js";
+export let max_bossHeatlh;
 
 let random_attack = 1,
     speed_arm = 5,
@@ -87,7 +88,7 @@ export function boss_ready() {
                 boss_1(boss2)
             }
         });
-        
+        max_bossHeatlh = boss[0].health
         random_attack = 1;
         speed_arm = 5;
         spawns.forEach((spawn) => {
