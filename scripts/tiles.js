@@ -426,7 +426,8 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     }
 
     if (player.collides(boss_arm)) {
-            map_create('map')
+        map_create('map')
+        scoreDeaths++;
     }
 
     //При падения игрока к границам canvas
@@ -632,13 +633,16 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             setTimeout(() => {
                 LoadSoundplayer("/laser.");
             }, 2000);
-            let laser = new lasers.Sprite();
-            laser.direction = -90;
-            laser.speed = 10;
-            laser.life = 40;
-            laser.x = laser_trap.x;
-            laser.y = laser_trap.y - laser_trap.w - 1;
-            laser.w = 1;
+            if (lasers.length<10) {
+                let laser = new lasers.Sprite();
+                laser.direction = -90;
+                laser.speed = 10;
+                laser.life = 10;
+                laser.x = laser_trap.x;
+                laser.y = laser_trap.y - laser_trap.w - 1;
+                laser.w = 1;
+            }
+            
         }
     });
 

@@ -10,6 +10,8 @@ let keys = {
     down: ["KeyS", "ArrowDown"],
     left: ["KeyA", "ArrowLeft"],
     right: ["KeyD", "ArrowRight"],
+    use: ["KeyE"],
+    shoot:["mouse0"],
     noclip: ["KeyV"],
     restart: ["KeyR"],
     menu: ["KeyM"],
@@ -20,9 +22,20 @@ export function chancePlayerSpeed(speed) {
     speedPlayer = speed
 }
 
+function delay(callback, ms) {
+        var timer = 0;
+        return function() {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            callback.apply(context, args);
+          }, ms || 0);
+        };
+}
+var keyState = {};
 export function controls(player) {
     //Клавиши
-    var keyState = {};
+    
     addEventListener("keypress", (e) => {
         if (e.code == keys.noclip) {
             player.sleeping = true;
@@ -43,25 +56,53 @@ export function controls(player) {
             location.reload()
         }
     });
-    addEventListener(
-        "keydown",
-        (e) => {
+    addEventListener("keydown",(e) => {
             keyState[e.code] = true;
-        },
-        true
-    );
-    addEventListener(
-        "keyup",
-        (e) => {
+        },true);
+    addEventListener('mousedown',(e) => {
+            keyState[`mouse${e.button}`] = true;
+            console.log(e)
+        },true);
+let t;
+    addEventListener('wheel',(e) => {
+        clearTimeout(t)
+        if (e.deltaY==-100) {
+            keyState[`mouseWheelUp`] = true;
+        }
+        if (e.deltaY==100) {
+            keyState[`mouseWheelDown`] = true;
+        }
+        t = setTimeout(() => {
+            keyState[`mouseWheelUp`] = false;
+            keyState[`mouseWheelDown`] = false;
+        }, 100);
+    });
+    addEventListener("keyup",(e) => {
             keyState[e.code] = false;
             if (!player.cooldown) {
+                player.act = "none"
                 player.velocity.x = 0;
             }
-        },
-        true
-    );
+        },true);
+    addEventListener('mouseup',(e) => {
+        keyState[`mouse${e.button}`] = false;
+        if (!player.cooldown) {
+            player.velocity.x = 0;
+        }
+        player.act = "none"
+    },true);
 
     function gameLoop() {
+        for (let i = 0; i < keys.shoot.length; i++) {
+        if (keyState[keys.shoot[i]]) {
+            player.act = "shoot"
+        }
+        }
+        for (let i = 0; i < keys.use.length; i++) {
+        if (keyState[keys.use[i]]) {
+            player.act = "use"
+            console.log(keyState[keys.use[i]]);
+        }}
         for (let i = 0; i < keys.up.length; i++) {
             if (keyState[keys.up[i]]) {
                 if (!player.colliding(wall) && !player.colliding(jumping) && player.colliding(tiles)) {

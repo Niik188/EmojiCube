@@ -29,9 +29,9 @@ export let timer1;
 //Запуск
 export function setup() {
     createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
-
     player = new Sprite();
     player.health = 100;
+    player.act = "none"
     player.textSize = 35;
     player.color = "#FFC83D";
     player.stroke = "black";
@@ -209,7 +209,7 @@ export function draw() {
     gun.y = player.y;
     gun.rotateTowards(mouse, 0.1, 0);
     //При нажатие кнопки мыши и при наличие оружия
-    if (mouse.pressing() && gun.visible) {
+    if (player.act == "shoot" && gun.visible) {
         if (bullets.length < 1) {
             gun.rotateTowards(mouse, 0.1, rotate1);
             let bullet = new bullets.Sprite();

@@ -1,5 +1,5 @@
 {
-    "info":["boss","tutorial","easy","normal","hard","extreme","boss","anomaly"],
+    "info":["tutorial","easy","normal","hard","extreme","boss","anomaly"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
@@ -17,7 +17,7 @@
         "one_level":false,
         "levels":[{
             "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","fall_barrier":"0"},
-            "effects":true,
+            "effects":false,
             "map":[
                 ".......touch a",
                 ".........block..",
@@ -28,7 +28,7 @@
                 "................",
                 "...............0"
             ],
-            "emoji":["➡️"]
+            "emoji":["➡️"],"laser_button":[2,1]
             },
             {"tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","spike":"*"},
              "map":[
