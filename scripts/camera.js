@@ -1,7 +1,7 @@
 let shakeCam = false;
 let shake = {x:[],y:[]}
 let shakePower = 0;
-let scaleFactor = 0.2
+let scaleFactor = 0.15
 let pixelsWidth;
 
 export function cameraPosition(camera, player, map, canvas, number_level) {
@@ -9,27 +9,29 @@ export function cameraPosition(camera, player, map, canvas, number_level) {
     camera.zoom = scaleFactor * (pixelsWidth / 256);
     let camerYoff = 10.0;
     let lagFactor = 0.05;
-    let dx = player.x+50 - camera.x + mouse.x/8;
+    let dx = 350 - camera.x + mouse.x/8;
     let dy = player.y- camerYoff - camera.y + mouse.y/10;
+    // let dx = player.x+50 - camera.x + mouse.x/8;
+    // let dy = player.y- camerYoff - camera.y + mouse.y/10;
     camera.x += dx * lagFactor;
     camera.y += dy * lagFactor/2;
     // camera.x = canvas.w / 0.85 - canvas.w;
     // camera.y = canvas.h / 0.7 - canvas.h;
-    if (canvas.w < 1200) {
-        camera.x = player.x;
-    }
-    if (canvas.h < 800) {
-        camera.y = player.y;
-    }
-    if (map.levels[number_level].camera_player != undefined && player.x >= canvas.w / 3.5) {
-        if (map.levels[number_level].camera_player) {
-            camera.x = player.x;
-        }
-    } else if (player.x >= canvas.w / 3.5) {
-        if (map.camera_player) {
-            camera.x = player.x;
-        }
-    }
+    // if (canvas.w < 1200) {
+    //     camera.x = player.x;
+    // }
+    // if (canvas.h < 800) {
+    //     camera.y = player.y;
+    // }
+    // if (map.levels[number_level].camera_player != undefined && player.x >= canvas.w / 3.5) {
+    //     if (map.levels[number_level].camera_player) {
+    //         camera.x = player.x;
+    //     }
+    // } else if (player.x >= canvas.w / 3.5) {
+    //     if (map.camera_player) {
+    //         camera.x = player.x;
+    //     }
+    // }
     if (shakeCam) {
         if (shakePower<=0) {
             shakeCam = false;

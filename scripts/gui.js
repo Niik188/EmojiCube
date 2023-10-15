@@ -53,16 +53,33 @@ export function GUI_render(map,scoreDeaths,boss) {
         if (boss.length != 0) {
             boss_panel.show()
             let text1 = [];
-            for (let i = 0; i < boss[0].health / 10; i++) {
-                text1.push("⬛");
-            }
-            for (let i = 0; i < (max_bossHeatlh-boss[0].health)/10; i++) {
-                if (String((max_bossHeatlh-boss[0].health)/10).indexOf('.')!=-1&&i==0) {
-                    text1.push("🔳");
-                }else{
-                    text1.push("⬜");
+            if (!boss[0].visible) {
+                for (let i = 0; i < boss[0].health / 10; i++) {
+                    text1.push("💿");
                 }
             }
+            if (boss[0].visible) {
+            for (let i = 0; i < boss[0].health / 10; i++) {
+                if (String((max_bossHeatlh-boss[0].health)/10).indexOf('.')!=-1&&i<(boss[0].health / 10)-0.5) {
+                    text1.push("❤️");
+                }
+                if (String((max_bossHeatlh-boss[0].health)/10).indexOf('.')==-1) {
+                    text1.push("❤️");
+                }
+            }}
+            for (let i = 0; i < (max_bossHeatlh-boss[0].health)/10; i++) {
+                if (String((max_bossHeatlh-boss[0].health)/10).indexOf('.')!=-1&&i==0) {
+                    if (boss[0].visible) {
+                        text1.push("💔");
+                    }else{
+                        text1.push("📀");
+                    }
+                }else{
+                    text1.push("🖤");
+                }
+            }
+            
+            
             boss_panel.elt.innerText = `BOSS of the GYM:\n${text1.join("")}`
         }else{
             boss_panel.hide()
