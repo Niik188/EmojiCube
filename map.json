@@ -1,5 +1,5 @@
 {
-    "info":["boss","tutorial","easy","normal","hard","extreme","boss","anomaly"],
+    "info":["tutorial","easy","normal","hard","extreme","boss","anomaly"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
@@ -274,7 +274,7 @@
                 "blocks":"black",
                 "walls":"rgba(0,0,0,0)"
             }},
-            {"tiles":{"block":"=","spawn":"/","wall":"|"},"light": false,"camera_player": true,"map":[
+            {"tiles":{"block":"=","spawn":"/","wall":"|"},"light": false,"camera_position": "player","map":[
                 "|||/.||||||||||||||||||||||||||||",
                 "|................................",
                 "|................................",
@@ -344,7 +344,7 @@
         "title":"no data",
         "background": [155,80,80,85],
         "fall_spawn":false,
-        "camera_player":true,
+        "camera_position":"player",
         "light": true,
         "player_ball":false,
         "gun_of_win":false,
@@ -353,7 +353,8 @@
         "next_level_after_fall":true,
         "gun_enable":true,
         "one_level":true,
-        "levels":[{"tile":[
+        "levels":[
+            {"map":[
             "|..............",
             "|..what.......",
             "|......you..doing.|",
@@ -361,28 +362,28 @@
             "={..............|..",
             "=====?===?==----...."
             ]},
-            {"tile":[
+            {"map":[
                 "|...............|",
                 "|..............{|!",
                 "|.............===",
                 "|....0..0.....===",
                 "|--='=-=='=='===="
             ]},
-            {"tile":[
+            {"map":[
                 "|...............|   |",
                 "|.............@#|   |",
                 "|................   |",
                 "|{...............   |",
                 "|================!==|"
             ]},
-            {"tile":[
+            {"map":[
                 "|...............|",
                 "|...............|",
                 "|................}",
                 "|....--------'=======!!",
                 "|--='????????"
             ]},
-            {"tile":[
+            {"map":[
                 "...............",
                 "...............",
                 "...............",
@@ -393,7 +394,7 @@
     }],
     "test":[{
         "title":"test",
-        "camera_player":true,
+        "camera_position":"player",
         "background": [255,255,255,35],
         "gun_enable":true,
         "player_ball":true,

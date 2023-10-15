@@ -81,13 +81,13 @@ let t;
             keyState[e.code] = false;
             if (!player.cooldown) {
                 player.act = "none"
-                player.velocity.x = 0;
+                player[0].velocity.x = 0;
             }
         },true);
     addEventListener('mouseup',(e) => {
         keyState[`mouse${e.button}`] = false;
         if (!player.cooldown) {
-            player.velocity.x = 0;
+            player[0].velocity.x = 0;
         }
         player.act = "none"
     },true);
@@ -105,19 +105,19 @@ let t;
         }}
         for (let i = 0; i < keys.up.length; i++) {
             if (keyState[keys.up[i]]) {
-                if (!player.colliding(wall) && !player.colliding(jumping) && player.colliding(tiles)) {
-                    player.velocity.y = -5;
+                if (!player[0].colliding(wall) && !player[0].colliding(jumping) && player[0].colliding(tiles)) {
+                    player[0].velocity.y = -5;
                     shakeCamera(100,0.1,false,true)
                     LoadSoundplayer("/jump.");
                 }
                 objects.forEach((object) => {
-                    if (player.colliding(object) && !object.active) {
-                        player.velocity.y = -5;
+                    if (player[0].colliding(object) && !object.active) {
+                        player[0].velocity.y = -5;
                         LoadSoundplayer("/jump.");
                     }
                 });
                 if (god_mode) {
-                    player.y -= 5;
+                    player[0].y -= 5;
                 }
             }
         }
@@ -125,25 +125,25 @@ let t;
         for (let i = 0; i < keys.down.length; i++) {
             if (keyState[keys.down[i]]) {
                 if (god_mode) {
-                    player.y += 5;
+                    player[0].y += 5;
                 }
             }
         }
 
         for (let i = 0; i < keys.left.length; i++) {
             if (keyState[keys.left[i]] && !player.cooldown) {
-                player.velocity.x = -speedPlayer;
+                player[0].velocity.x = -speedPlayer;
                 if (god_mode) {
-                    player.velocity.x = -5;
+                    player[0].velocity.x = -5;
                 }
             }
         }
 
         for (let i = 0; i < keys.right.length; i++) {
             if (keyState[keys.right[i]] && !player.cooldown) {
-                player.velocity.x = speedPlayer;
+                player[0].velocity.x = speedPlayer;
                 if (god_mode) {
-                    player.velocity.x = 5;
+                    player[0].velocity.x = 5;
                 }
             }
         }
@@ -151,7 +151,7 @@ let t;
         for (let i = 0; i < keys.right.length; i++) {
             for (let j = 0; j < keys.left.length; j++) {
                 if (keyState[keys.left[i]] && keyState[keys.right[i]] && !player.cooldown) {
-                    player.velocity.x = 0;
+                    player[0].velocity.x = 0;
                 }
             }
         }

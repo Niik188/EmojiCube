@@ -28,7 +28,7 @@ export let timer1;
 //Запуск
 export function setup() {
     createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
-    player = new Sprite();
+    player = new Group();
     player.health = 100;
     player.act = "none"
     player.textSize = 35;
@@ -48,6 +48,7 @@ export function setup() {
     };
     player.death = false;
     player.cooldown = false;
+    player.tile = ''
     //controls(player,god_mode)
     //let random_count = getRandomInt(0, 10);
     // if (random_count <= 3 && random_count >= 2) {
@@ -205,8 +206,8 @@ export function draw() {
             bullets.stroke = bullets.color = "rgb(79, 89, 176)";
         }
     }
-    gun.x = player.x;
-    gun.y = player.y;
+    gun.x = player[0].x;
+    gun.y = player[0].y;
     gun.rotateTowards(mouse, 0.1, 0);
     //При нажатие кнопки мыши и при наличие оружия
     if (player.act == "shoot" && gun.visible) {
@@ -226,7 +227,7 @@ export function draw() {
         }
     }
     //Отражать оружие, когда x мыши меньше x игрока
-    if (player.x < mouse.x) {
+    if (player[0].x < mouse.x) {
         gun.mirror.x = true;
         gun.mirror.y = false;
         rotate1 = -150;
@@ -245,8 +246,8 @@ export function draw() {
 //Создание и перезапуск уровня
 export function map_create(restart_level, death) {
     chancePlayerSpeed(3);
-    
     background(0);
+    player.removeAll();
     tiles.removeAll();
     objects.removeAll();
     boss_arm.removeAll();
@@ -336,6 +337,7 @@ export function map_create(restart_level, death) {
     chanceColorTiles(map.levels[random_level]);
     boss_ready();
     checkTiles(map.levels[random_level].map, death);
+    let player1 = new player.Sprite()
     try {
         if (death == "fall") {
             if (map.fall_spawn && spawns.length != 0) {
@@ -344,8 +346,8 @@ export function map_create(restart_level, death) {
             } else if (spawns.length == 0) {
                 player.y = 0;
                 player_spawn.active = true;
-                player_spawn.x = player.x;
-                player_spawn.y = player.y;
+                player_spawn.x = player[0].x;
+                player_spawn.y = player[0].y;
             } else {
                 player.y = 0;
             }
@@ -354,8 +356,8 @@ export function map_create(restart_level, death) {
             player.y = spawns[getRandomInt(0, spawns.length)].y;
         }
     } catch (error) {
-        player.x = player_spawn.x;
-        player.y = player_spawn.y;
+        player[0].x = player_spawn.x;
+        player[0].y = player_spawn.y;
     }
     gun.visible = map.gun_enable;
     if (map.levels[random_level].gun_enable != undefined) {
@@ -383,7 +385,7 @@ function checkTiles(tiles, death) {
         }
     }
     if (count == 0 && death != "fall" && !player_spawn.active) {
-        player.remove();
+        player[0].remove();
         console.log("%c💀Error spawn is not defined💀", "color: red; background-color: black");
         setInterval(() => {
             for (let i = 0; i < random(10, 100); i++) {
