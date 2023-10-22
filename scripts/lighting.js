@@ -8,7 +8,7 @@ let effs
 export function effects_start(dark1,player) {
     effs = new Group()
     if (window_canvas.w>window_canvas.h) {
-        dark = createImage(canvas.w*4, canvas.h*4);
+        dark = createImage(canvas.w*4, canvas.h*5);
     }else{
         dark = createImage(canvas.w*4, canvas.h*8);
     }

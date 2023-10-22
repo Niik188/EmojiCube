@@ -9,6 +9,7 @@ import {
     timer1,
     player,
     bullets,
+    skins,
 } from "./game.js";
 import { LoadSoundplayer, musicLevelLoad, musicLevelStop } from "./loadF.js";
 import { getRandomInt } from "./utils.js";
@@ -323,8 +324,8 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             map_create("none");
             player[0].rotation = 0;
         } else {
-            player[0].text = player[0].emojis.win;
-            player[0].color = player[0].emojis.win_color;
+            player[0].text = player.emojis.win;
+            player[0].color = player.emojis.win_color;
             player[0].death = false;
             clearTimeout(timer1);
             win_next = slowmotion = true;
@@ -375,8 +376,8 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     if (win_next) {
         if (json.info[difficulty] == "boss") {
             background(0, 0, 0, 255);
-            player[0].text = player[0].emojis.win_glitch;
-            player[0].color = player[0].emojis.win_color;
+            player[0].text = player.emojis.win_glitch;
+            player[0].color = player.emojis.win_color;
         } else {
             background(0, 255, 0, 10);
         }
@@ -393,7 +394,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         skeleton.color = "white";
         skeleton.stroke = "white";
         skeleton.textSize = 26;
-        skeleton.text = "💀";
+        skeleton.text = player.emojis.death;
         skeleton.bounciness = 2;
         skeleton.direction = -player[0].rotation;
         skeleton.speed = Math.abs(player[0].velocity.x + player[0].velocity.y);
@@ -405,7 +406,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         gun_weapon.color = "white";
         gun_weapon.stroke = "white";
         gun_weapon.textSize = 32;
-        gun_weapon.text = "🔫";
+        gun_weapon.text = skins[player.skin].gun;
         gun_weapon.bounciness = 2;
         skeleton.direction = -gun.rotation;
         skeleton.speed = 10;
@@ -430,7 +431,6 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             } else if (map.enable_scoreDeath == undefined) {
                 scoreDeaths++;
             }
-            player[0].sleeping = true;
             player[0].visible = true;
             player[0].rotation = 0;
             slowmotion = false;
@@ -464,7 +464,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         gun_weapon.color = "white";
         gun_weapon.stroke = "white";
         gun_weapon.textSize = 32;
-        gun_weapon.text = "🔫";
+        gun_weapon.text = skins[player.skin].gun;
         gun_weapon.bounciness = 2;
         skeleton.direction = -gun.rotation;
         skeleton.speed = 10;
@@ -486,7 +486,6 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         setTimeout(() => {
         player[0].collider = "d";
         player[0].death = false;
-        player[0].sleeping = true;
         player[0].visible = true;
         player[0].rotation = 0;
         slowmotion = false;
@@ -504,8 +503,6 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
             player[0].rotation = 0;
-            player[0].sleeping = true;
-            player[0].velocity.y = 0.001;
             if (map.next_level_after_fall && map.levels.length != 1) {
                 map.levels.splice(number_level, 1);
             }
@@ -524,12 +521,10 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         fall_barrier.length == 0 &&
         !god_mode
     ) {
-        player[0].text = player[0].emojis.schock;
-        player[0].color = player[0].emojis.schock_color;
+        player.text = player.emojis.schock;
+        player.color = player.emojis.schock_color;
         playerSetTextDefult(true);
         player[0].rotation = 0;
-        player[0].sleeping = true;
-        player[0].velocity.y = 0.001;
         if (map.next_level_after_fall && map.levels.length != 1) {
             map.levels.splice(number_level, 1);
         }

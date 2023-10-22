@@ -9,8 +9,8 @@ import { boss, boss_arm, chanceColorTiles, emoji, load_tiles, objects, scoreDeat
 import { getRandomInt } from "./utils.js";
 export let player;
 let player_spawn = { active: false, x: 0, y: 0 };
-let playerTextdefult = "😐";
-let playerColordefult = "#FFC83D";
+let playerTextdefult;
+let playerColordefult;
 let gun;
 export let bullets;
 let difficulty;
@@ -20,6 +20,7 @@ export let number_level = 0;
 let random_level = 0;
 export let pauseGame = false;
 let json;
+export let skins;
 let dark1;
 export let light, light1;
 export let font;
@@ -28,24 +29,18 @@ export let timer1;
 //Запуск
 export function setup() {
     createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
+    let random_count = getRandomInt(0, 10);
+    if (random_count <= 3 && random_count >= 2) {document.title = "🥵EmojiCube😋"}
+    if (random_count >= 6 && random_count <= 8) {document.title = "🤓Cube"}
+    if (random_count >= 9) {document.title = "(^o^)Cube"}
+    if (random_count <= 1) {document.title = "😏EmojiCube"}
     player = new Group();
+    player.skin = "skin5"
     player.health = 100;
     player.act = "none"
-    player.textSize = 35;
-    player.color = "#FFC83D";
     player.stroke = "black";
     player.w = 38;
     player.h = 38;
-    player.emojis = {
-        win: "😄",
-        schock: "😲",
-        unruhe: ["😟", "😨", "😱"],
-        cheat: "😎",
-        win_glitch: "😰",
-        win_color: "#FFC83D",
-        schock_color: "#FFC83D",
-        unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
-    };
     player.death = false;
     player.cooldown = false;
     player.tile = ''
@@ -108,11 +103,10 @@ export function setup() {
     //         unruhe_color: ["#FFC83D", "#FFC83D", "#FFC83D"],
     //     };
     // }
-    player.text = playerTextdefult;
 
     gun = new Sprite();
     gun.textSize = 32;
-    gun.text = "🔫ㅤㅤ";
+    gun.text = `${skins[player.skin].gun}ㅤㅤ`;
     gun.collider = "n";
     gun.w = 0;
     gun.h = 0;
@@ -143,11 +137,29 @@ export function setup() {
     setTimeout(() => {
         musicLevelLoad(map.song_main);
     }, 1000);
+    playerTextdefult = skins[player.skin].defualt
+    player.text = playerTextdefult;
+    playerColordefult = skins[player.skin].defualt_color
+    player.color = playerColordefult;
+    player.textSize = skins[player.skin].textSize;
+    console.log(skins[player.skin].win)
+    player.emojis = {
+        win: skins[player.skin].win,
+        schock: skins[player.skin].schock,
+        unruhe: skins[player.skin].unruhe,
+        cheat: skins[player.skin].cheat,
+        death: skins[player.skin].death,
+        win_glitch: skins[player.skin].win_glitch,
+        win_color: skins[player.skin].win_color,
+        schock_color: skins[player.skin].schock_color,
+        unruhe_color: skins[player.skin].unruhe_color,
+    };
 }
 
 //До загрузки
 export function preload() {
     json = loadJSON("./map.json");
+    skins = loadJSON("./skins.json");
     //background(canvas.toDataURL())
     light = loadImage("./img/light.png");
     light1 = loadImage("./img/light1.png");
@@ -179,7 +191,7 @@ export function playerSetTextDefult(timer, win_glitch) {
         };
         playerSetTextDefult(false);
     } else {
-        if (player.text != playerTextdefult && timer) {
+        if (player[0].text != playerTextdefult && timer) {
             timer1 = setTimeout(() => {
                 player.text = playerTextdefult;
                 player.color = playerColordefult;
@@ -192,7 +204,7 @@ export function playerSetTextDefult(timer, win_glitch) {
     }
 }
 
-let rotate1;
+let rotate1 = 150;
 let timer_bullets;
 export function draw() {
     if (backgroundMap.img != undefined) {
@@ -230,11 +242,11 @@ export function draw() {
     if (player[0].x < mouse.x) {
         gun.mirror.x = true;
         gun.mirror.y = false;
-        rotate1 = -150;
+        rotate1 = -Math.abs(rotate1);
     } else {
         gun.mirror.x = true;
         gun.mirror.y = true;
-        rotate1 = 150;
+        rotate1 = Math.abs(rotate1);
     }
     GUI_render(map,scoreDeaths,boss)
     effects_draw(dark1, map.levels[random_level]);
@@ -297,7 +309,7 @@ export function map_create(restart_level, death) {
     }
     if (map.levels[random_level].win != undefined) {
         if (map.levels[random_level].win == "gun") {
-            win.text = "🔫";
+            win.text = skins[player.skin].gun;
             win.w = 10;
             win.h = 10;
             win.collider = "s";
@@ -308,7 +320,7 @@ export function map_create(restart_level, death) {
         }
     }else{
         if (map.win == "gun") {
-        win.text = "🔫";
+        win.text = skins[player.skin].gun;
         win.w = 10;
         win.h = 10;
         win.collider = "s";
@@ -373,6 +385,7 @@ export function map_create(restart_level, death) {
     }
     tiles.layer = 1;
     objects.layer = 1;
+    dark1.layer = 2;
 }
 
 function checkTiles(tiles, death) {

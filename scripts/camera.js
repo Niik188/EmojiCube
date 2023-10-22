@@ -13,8 +13,8 @@ export function cameraPosition(camera, player, map, canvas, number_level) {
     let lagFactor = 0.05;
     if (map.levels[number_level].camera_position != undefined && player.x >= canvas.w / 3.5) {
         if (map.levels[number_level].camera_position == "player"&&camera_object == undefined) {
-            let dx = player.x+50 - camera.x + mouse.x/8;
-            let dy = player.y- camerYoff - camera.y + mouse.y/10;
+            let dx = player[0].x+50 - camera.x + mouse.x/8;
+            let dy = player[0].y- camerYoff - camera.y + mouse.y/10;
             camera.x += dx * lagFactor;
             camera.y += (dy * lagFactor) / 2;
         }
