@@ -1,5 +1,6 @@
 import { max_bossHeatlh } from "./boss.js";
 import { panelMusicEnable } from "./loadF.js";
+import { panelCheckPointEnable } from "./tiles.js";
 
 let main_panel
 let boss_panel
@@ -40,8 +41,13 @@ export function GUI_render(map,scoreDeaths,boss) {
         }else{
             main_panel.elt.innerText = `${map.title}: ${map.levels.length} Deaths: ${scoreDeaths}\n${date.toLocaleTimeString()} ${date.toLocaleDateString()}`
         }
-        music_panel.elt.innerText = `Now playing music:\n${map.song_main}`
         if (panelMusicEnable) {
+            music_panel.elt.innerText = `Now playing music:\n${map.song_main}`
+            opacityMusicPanel = 100
+            music_panel.show()
+        }
+        if (panelCheckPointEnable) {
+            music_panel.elt.innerText = `🔅CHECKPOINT🔅`
             opacityMusicPanel = 100
             music_panel.show()
         }

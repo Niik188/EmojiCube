@@ -1,5 +1,5 @@
 {
-    "info":["tutorial","easy","normal","hard","extreme","boss","anomaly"],
+    "info":["extreme","tutorial","easy","normal","hard","boss","anomaly"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
@@ -7,7 +7,7 @@
         "tick": false,
         "enable_scoreDeath": false,
         "background": {"img":1,"tint":250,"light":true},
-        "light": false,
+        "light": true,
         "win":"normal",
         "random_level":false,
         "random_level_after_die":false,
@@ -71,7 +71,7 @@
     "easy":[{
         "title":"Easy",
         "tick": false,
-        "background": [255,255,255, 150],
+        "background": {"img":1,"tint":250,"light":true},
         "light": true,
         "win":"normal",
         "random_level":true,
@@ -127,7 +127,7 @@
     }],
     "normal":[{
         "title":"Normal",
-        "background": [255,255,255,120],
+        "background": {"img":1,"tint":240,"light":true},
         "fall_spawn":true,
         "light": true,
         "random_level_after_die":false,
@@ -178,7 +178,7 @@
     }],
     "hard":[{
         "title":"Hard",
-        "background": [155,155,155,55],
+        "background": {"img":1,"tint":220,"light":true},
         "fall_spawn":true,
         "player_ball":false,
         "gun_enable":false,
@@ -244,19 +244,19 @@
     }],
     "extreme":[{
         "title":"storage",
-        "background": [155,155,155,55],
+        "background": {"img":3,"tint":100,"light":false},
         "song_main":"Mus_waterquiet_OST",
         "fall_spawn":true,
         "light": true,
         "player_ball":false,
-        "win":"gun",
+        "win":"none",
         "random_level":false,
-        "random_level_after_die":true,
-        "next_level_after_fall":true,
+        "random_level_after_die":false,
+        "next_level_after_fall":false,
         "gun_enable":false,
-        "one_level":true,
-        "levels":[{"tiles":{"block":"=","spawn":"{","wall":"|","fall_barrier":"0"},
-            "background": [235,235,235,10],
+        "one_level":false,
+        "levels":[{"tiles":{"block":"=","spawn":"{","wall":"|","win":"-","fall_barrier":"0"},
+            "background": {"img":2,"tint":240,"light":true},
             "effects": true,
             "tile_position": {"x":0,"y":250},"map":[
             "..........|...",
@@ -270,18 +270,22 @@
             ".......|......|...",
             ".......|......|...",
             ".......|......|...",
-            ".......|......|..0"
+            "-------|......|..0"
             ],"color":{
                 "blocks":"black",
                 "walls":"rgba(0,0,0,0)"
             }},
-            {"tiles":{"block":"=","spawn":"/","wall":"|"},"light": false,"camera_position": "player","map":[
-                "|||/.||||||||||||||||||||||||||||",
-                "|................................",
-                "|................................",
-                "|................................",
-                "|================================"
-            ]},
+            {"tiles":{"block":"=","spawn":"/","spike":"*","wall":"|","win":"'","emoji":"1","jump_block":"+","fall_block":"-","speed_right_block":">","die_block":")"},"light": false,"camera_position": "player","map":[
+                "|../...........................................>.....................................................)..)....).....)....)..................|...",
+                "|..........................................................................................................................................|...",
+                "|............................................................----=----=---...............----........./....................................|...",
+                "|........*....*.....1....*..*1....../....=======+.............................=-------=.........-----============)===========----------------------",
+                "|========================================....................................................................................'''''''''''''''"
+            ],
+            "emoji":["🤖","💽"],"color":{
+                "blocks":"black",
+                "walls":"rgba(0,0,0,0)"
+            }},
             {"tiles":{"block":"=","wall":"|","spawn":"{","die_block":"*","fall_block":"-","trap_block":"!","win":"]"},"map":[
                 "|||||||||.....|||||||",
                 "............{.|",
@@ -296,7 +300,7 @@
     }],
     "boss":[{
         "title":"BOSS",
-        "background": [55,55,55,55],
+        "background": {"img":3,"tint":50,"light":false},
         "song_main":"toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805",
         "fall_spawn":false,
         "win":"normal",

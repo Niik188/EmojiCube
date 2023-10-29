@@ -10,6 +10,7 @@ import { getRandomInt } from "./utils.js";
 let players;
 let player_spawn = { active: false, x: 0, y: 0 };
 let playerTextdefult;
+let spawns_activated = 0
 let playerColordefult;
 let gun;
 export let bullets;
@@ -143,7 +144,7 @@ export function setup() {
     dark1 = new Sprite();
     dark1.collider = "n";
     dark1.visible = false;
-    dark1.scale = 2;
+    dark1.scale = 4;
 
     effects_start(dark1, player);
     GUI_setup();
@@ -213,7 +214,7 @@ export function draw() {
         let dy = (mouseY/10);
         tint(backgroundMap.tint)
         background(backgroundMap.tint);
-        image(images[backgroundMap.img - 1],dx*0.05,dy*0.05,canvas.w,canvas.h)
+        image(images[backgroundMap.img - 1],(dx*0.05)-100,(dy*0.05)-100,canvas.w*1.2,canvas.h*1.2, 0, 0, images[backgroundMap.img - 1].width, images[backgroundMap.img - 1].height, CONTAIN)
         if (!backgroundMap.light) {
             bullets.stroke = bullets.color = skins[players.skin].color_bullets_light;
             gun.textColor = 'white'
@@ -272,7 +273,7 @@ export function draw() {
     GUI_render(map,scoreDeaths,boss)
     effects_draw(dark1, map.levels[random_level]);
     p5controls(player, map.levels[random_level]);
-    tile_functional(player, map, json, difficulty, gun, bullets);
+    tile_functional(player, map, json, difficulty, gun, bullets, backgroundMap, spawns_activated);
     cameraPosition(camera, player, map, canvas, number_level);
 }
 
@@ -394,8 +395,13 @@ export function map_create(restart_level, death) {
                 players.y = 0;
             }
         } else {
-            players.x = spawns[getRandomInt(0, spawns.length)].x;
-            players.y = spawns[getRandomInt(0, spawns.length)].y;
+            if (spawns_activated>0) {
+                players.x = spawns[getRandomInt(0, spawns_activated)].x;
+                players.y = spawns[getRandomInt(0, spawns_activated)].y;
+            }else{
+                players.x = spawns[0].x;
+                players.y = spawns[0].y;
+            }
         }
     } catch (error) {
         player.x = player_spawn.x;

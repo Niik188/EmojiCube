@@ -13,6 +13,7 @@ import {
 } from "./game.js";
 import { LoadSoundplayer, musicLevelLoad, musicLevelStop } from "./loadF.js";
 import { getRandomInt } from "./utils.js";
+export let panelCheckPointEnable = false
 export let tiles,
     objects,
     spawns,
@@ -283,7 +284,7 @@ async function move_ultra_robot_fly() {
     move_robot_fly();
 }
 
-export function tile_functional(player, map, json, difficulty, gun, bullets) {
+export function tile_functional(player, map, json, difficulty, gun, bullets, backgroundMap, spawns_activated) {
     player.collides(alphabet_letters, (player, letter) => {
         if (letter.type == "letter" && letter.collider == "static") {
             letter.health -= getRandomInt(0, 50);
@@ -295,13 +296,21 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             letter.health -= getRandomInt(0, 80);
         }
     });
+    // if (spawns[1] != undefined&&player.x>spawns[0].x) {
+    //     spawns_activated++
+    //     panelCheckPointEnable = true
+    //     setTimeout(() => {
+    //         panelCheckPointEnable = false
+    //     }, 500);
+    // }
 
     alphabet_letters.forEach((letter) => {
-        if (
-            letter.type == "letter" &&
-            letter.collider == "static" &&
-            letter.health <= 0
-        ) {
+        if (!backgroundMap.light&&letter.type == "letter" &&letter.collider == "static" &&letter.health > 0) {
+            letter.textColor = "rgb(255,255,255)";
+        }else if(backgroundMap.light&&letter.type == "letter" &&letter.collider == "static" &&letter.health > 0){
+            letter.textColor = "rgb(0,0,0)";
+        }
+        if (letter.type == "letter" &&letter.collider == "static" &&letter.health <= 0) {
             letter.collider = "d";
             letter.textColor = "rgb(100,100,100)";
             letter.life = getRandomInt(1500, 1560);

@@ -8,9 +8,11 @@ let effs
 export function effects_start(dark1,player) {
     effs = new Group()
     if (window_canvas.w>window_canvas.h) {
-        dark = createImage(canvas.w*3, canvas.h*4);
+        dark = createImage(canvas.w*1, canvas.h*1.2);
+        dark1.scale = 5
     }else{
         dark = createImage(canvas.w*4, canvas.h*8);
+        dark1.scale = 10
     }
     dark.loadPixels();
     for (let x = 0; x < dark.width; x++) {
