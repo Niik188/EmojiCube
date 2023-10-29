@@ -6,8 +6,8 @@
         "song_main":"Another_Medium",
         "tick": false,
         "enable_scoreDeath": false,
-        "background": [225,225,225,120],
-        "light": true,
+        "background": {"img":1,"tint":250,"light":true},
+        "light": false,
         "win":"normal",
         "random_level":false,
         "random_level_after_die":false,
@@ -18,6 +18,7 @@
         "levels":[{
             "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","fall_barrier":"0"},
             "effects":false,
+            "camera_position":"player",
             "map":[
                 ".......touch a",
                 ".........block..",

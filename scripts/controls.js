@@ -33,20 +33,19 @@ function delay(callback, ms) {
         };
 }
 var keyState = {};
-export function controls(player) {
+export function controls(players) {
     //Клавиши
-    
     addEventListener("keypress", (e) => {
         if (e.code == keys.noclip) {
-            player.sleeping = true;
-            player.rotation = 0;
+            players[0].sleeping = true;
+            players[0].rotation = 0;
             god_mode = !god_mode;
             playerSetTextDefult(false);
         }
         if (e.code == keys.restart && !keys.restartCoolDown) {
-            player.sleeping = true;
+            players[0].sleeping = true;
             keys.restartCoolDown = true;
-            player.rotation = 0;
+            players[0].rotation = 0;
             map_create('level');
             setTimeout(() => {
                 keys.restartCoolDown = false;
@@ -79,45 +78,47 @@ let t;
     });
     addEventListener("keyup",(e) => {
             keyState[e.code] = false;
-            if (!player.cooldown) {
-                player.act = "none"
-                player[0].velocity.x = 0;
+            if (!players[0].cooldown) {
+                players[0].act = "none"
+                players[0].velocity.x = 0;
             }
         },true);
     addEventListener('mouseup',(e) => {
         keyState[`mouse${e.button}`] = false;
-        if (!player.cooldown) {
-            player[0].velocity.x = 0;
+        if (!players[0].cooldown) {
+            players[0].velocity.x = 0;
         }
-        player.act = "none"
+        players[0].act = "none"
     },true);
 
     function gameLoop() {
         for (let i = 0; i < keys.shoot.length; i++) {
         if (keyState[keys.shoot[i]]) {
-            player.act = "shoot"
+            players[0].act = "shoot"
         }
         }
         for (let i = 0; i < keys.use.length; i++) {
         if (keyState[keys.use[i]]) {
-            player.act = "use"
+            players[0].act = "use"
             console.log(keyState[keys.use[i]]);
         }}
         for (let i = 0; i < keys.up.length; i++) {
             if (keyState[keys.up[i]]) {
-                if (!player[0].colliding(wall) && !player[0].colliding(jumping) && player[0].colliding(tiles)) {
-                    player[0].velocity.y = -5;
+                tiles.forEach(tile => {
+                    if (players[0].colliding(tile)&&tile.ground == "jump") {
+                    players[0].velocity.y = -5;
                     shakeCamera(100,0.1,false,true)
                     LoadSoundplayer("/jump.");
-                }
+                    }
+                });
                 objects.forEach((object) => {
-                    if (player[0].colliding(object) && !object.active) {
-                        player[0].velocity.y = -5;
+                    if (players[0].colliding(object) && !object.active && object.ground == "jump") {
+                        players[0].velocity.y = -5;
                         LoadSoundplayer("/jump.");
                     }
                 });
                 if (god_mode) {
-                    player[0].y -= 5;
+                    players[0].y -= 5;
                 }
             }
         }
@@ -125,33 +126,33 @@ let t;
         for (let i = 0; i < keys.down.length; i++) {
             if (keyState[keys.down[i]]) {
                 if (god_mode) {
-                    player[0].y += 5;
+                    players[0].y += 5;
                 }
             }
         }
 
         for (let i = 0; i < keys.left.length; i++) {
-            if (keyState[keys.left[i]] && !player.cooldown) {
-                player[0].velocity.x = -speedPlayer;
+            if (keyState[keys.left[i]] && !players[0].cooldown) {
+                players[0].velocity.x = -speedPlayer;
                 if (god_mode) {
-                    player[0].velocity.x = -5;
+                    players[0].velocity.x = -5;
                 }
             }
         }
 
         for (let i = 0; i < keys.right.length; i++) {
-            if (keyState[keys.right[i]] && !player.cooldown) {
-                player[0].velocity.x = speedPlayer;
+            if (keyState[keys.right[i]] && !players[0].cooldown) {
+                players[0].velocity.x = speedPlayer;
                 if (god_mode) {
-                    player[0].velocity.x = 5;
+                    players[0].velocity.x = 5;
                 }
             }
         }
 
         for (let i = 0; i < keys.right.length; i++) {
             for (let j = 0; j < keys.left.length; j++) {
-                if (keyState[keys.left[i]] && keyState[keys.right[i]] && !player.cooldown) {
-                    player[0].velocity.x = 0;
+                if (keyState[keys.left[i]] && keyState[keys.right[i]] && !players[0].cooldown) {
+                    players[0].velocity.x = 0;
                 }
             }
         }

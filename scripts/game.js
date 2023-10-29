@@ -1,13 +1,13 @@
 import { boss_ready } from "./boss.js";
-import { cameraPosition, shakeCamera } from "./camera.js";
+import { cameraPosition, scaleFactor, shakeCamera } from "./camera.js";
 import { controls, p5controls, chancePlayerSpeed } from "./controls.js";
 import { GUI_render, GUI_setup } from "./gui.js";
 import { effects_draw, effects_start } from "./lighting.js";
 import { images, LoadSoundplayer, musicLevelEnable, musicLevelLoad, musicLevelStop} from "./loadF.js";
 import { window_canvas } from "./menu.js";
-import { boss, boss_arm, chanceColorTiles, emoji, load_tiles, objects, scoreDeaths, setup_tiles, spawns, tiles, tile_functional, win } from "./tiles.js";
+import { boss, boss_arm, chanceColorTiles, emoji, load_tiles, objects, scoreDeaths, setup_tiles, slowmotion, spawns, tiles, tile_functional, win } from "./tiles.js";
 import { getRandomInt } from "./utils.js";
-export let player;
+let players;
 let player_spawn = { active: false, x: 0, y: 0 };
 let playerTextdefult;
 let playerColordefult;
@@ -25,6 +25,7 @@ let dark1;
 export let light, light1;
 export let font;
 export let timer1;
+export let player
 
 //Запуск
 export function setup() {
@@ -34,16 +35,32 @@ export function setup() {
     if (random_count >= 6 && random_count <= 8) {document.title = "🤓Cube"}
     if (random_count >= 9) {document.title = "(^o^)Cube"}
     if (random_count <= 1) {document.title = "😏EmojiCube"}
-    player = new Group();
-    player.skin = "skin5"
-    player.health = 100;
-    player.act = "none"
-    player.stroke = "black";
-    player.w = 38;
-    player.h = 38;
-    player.death = false;
-    player.cooldown = false;
-    player.tile = ''
+    players = new Group();
+    players.skin = "skin2"
+    players.health = 100;
+    players.textSize = skins[players.skin].textSize;
+    playerTextdefult = skins[players.skin].defualt
+    players.text = playerTextdefult;
+    playerColordefult = skins[players.skin].defualt_color
+    players.color = playerColordefult;
+    players.emojis = {
+        win: skins[players.skin].win,
+        schock: skins[players.skin].schock,
+        unruhe: skins[players.skin].unruhe,
+        cheat: skins[players.skin].cheat,
+        death: skins[players.skin].death,
+        win_glitch: skins[players.skin].win_glitch,
+        win_color: skins[players.skin].win_color,
+        schock_color: skins[players.skin].schock_color,
+        unruhe_color: skins[players.skin].unruhe_color,
+    };
+    players.act = "none"
+    players.stroke = "black";
+    players.w = 38;
+    players.h = 38;
+    players.death = false;
+    players.cooldown = false;
+    players.tile = ''
     //controls(player,god_mode)
     //let random_count = getRandomInt(0, 10);
     // if (random_count <= 3 && random_count >= 2) {
@@ -106,11 +123,11 @@ export function setup() {
 
     gun = new Sprite();
     gun.textSize = 32;
-    gun.text = `${skins[player.skin].gun}ㅤㅤ`;
+    gun.text = `${skins[players.skin].gun}ㅤㅤ`;
     gun.collider = "n";
     gun.w = 0;
     gun.h = 0;
-    player.layer = 1;
+    players.layer = 1;
     gun.layer = 0;
 
     bullets = new Group();
@@ -129,31 +146,14 @@ export function setup() {
     dark1.scale = 2;
 
     effects_start(dark1, player);
-    controls(player);
     GUI_setup();
     difficulty = 0;
     map = json[json.info[difficulty]][0];
     map_create();
+    controls(players);
     setTimeout(() => {
         musicLevelLoad(map.song_main);
     }, 1000);
-    playerTextdefult = skins[player.skin].defualt
-    player.text = playerTextdefult;
-    playerColordefult = skins[player.skin].defualt_color
-    player.color = playerColordefult;
-    player.textSize = skins[player.skin].textSize;
-    console.log(skins[player.skin].win)
-    player.emojis = {
-        win: skins[player.skin].win,
-        schock: skins[player.skin].schock,
-        unruhe: skins[player.skin].unruhe,
-        cheat: skins[player.skin].cheat,
-        death: skins[player.skin].death,
-        win_glitch: skins[player.skin].win_glitch,
-        win_color: skins[player.skin].win_color,
-        schock_color: skins[player.skin].schock_color,
-        unruhe_color: skins[player.skin].unruhe_color,
-    };
 }
 
 //До загрузки
@@ -179,7 +179,7 @@ export function playerSetTextDefult(timer, win_glitch) {
         document.title = "𝓔ΜÕ𝓘Î Ćμ𝔹𝕰";
         playerTextdefult = "🙁";
         playerColordefult = "#FFC83D";
-        player.emojis = {
+        players.emojis = {
             win: "😌",
             schock: "😮",
             unruhe: ["😟", "😨", "😱"],
@@ -191,7 +191,7 @@ export function playerSetTextDefult(timer, win_glitch) {
         };
         playerSetTextDefult(false);
     } else {
-        if (player[0].text != playerTextdefult && timer) {
+        if (player.text != playerTextdefult && timer) {
             timer1 = setTimeout(() => {
                 player.text = playerTextdefult;
                 player.color = playerColordefult;
@@ -208,18 +208,31 @@ let rotate1 = 150;
 let timer_bullets;
 export function draw() {
     if (backgroundMap.img != undefined) {
-        imageMode(CORNERS);
-        background(images[backgroundMap.img - 1]);
+        // imageMode(CORNERS);
+        let dx = (mouseX/10)-20;
+        let dy = (mouseY/10);
+        tint(backgroundMap.tint)
+        background(backgroundMap.tint);
+        image(images[backgroundMap.img - 1],dx*0.05,dy*0.05,canvas.w,canvas.h)
+        if (!backgroundMap.light) {
+            bullets.stroke = bullets.color = skins[players.skin].color_bullets_light;
+            gun.textColor = 'white'
+        } else {
+            bullets.stroke = bullets.color = skins[players.skin].color_bullets_dark;
+            gun.textColor = 'black'
+        }
     } else {
         background(backgroundMap);
         if (backgroundMap[0] < 155 && backgroundMap[1] < 155 && backgroundMap[2] < 155) {
-            bullets.stroke = bullets.color = "rgb(135, 194, 212)";
+            bullets.stroke = bullets.color = skins[players.skin].color_bullets_light;
+            gun.textColor = 'white'
         } else {
-            bullets.stroke = bullets.color = "rgb(79, 89, 176)";
+            bullets.stroke = bullets.color = skins[players.skin].color_bullets_dark;
+            gun.textColor = 'black'
         }
     }
-    gun.x = player[0].x;
-    gun.y = player[0].y;
+    gun.x = player.x;
+    gun.y = player.y;
     gun.rotateTowards(mouse, 0.1, 0);
     //При нажатие кнопки мыши и при наличие оружия
     if (player.act == "shoot" && gun.visible) {
@@ -239,14 +252,22 @@ export function draw() {
         }
     }
     //Отражать оружие, когда x мыши меньше x игрока
-    if (player[0].x < mouse.x) {
-        gun.mirror.x = true;
-        gun.mirror.y = false;
-        rotate1 = -Math.abs(rotate1);
+    if (player.x < mouse.x) {
+        gun.mirror.x = skins[players.skin].gun_mirror_x;
+        if (skins[players.skin].gun_mirror_y!=undefined) {
+            gun.mirror.y = !skins[players.skin].gun_mirror_y;
+        }else{
+            gun.mirror.y = false;
+        }
+        rotate1 = gun.mirror.y*Math.abs(rotate1);
     } else {
-        gun.mirror.x = true;
-        gun.mirror.y = true;
-        rotate1 = Math.abs(rotate1);
+        gun.mirror.x = skins[players.skin].gun_mirror_x;
+        if (skins[players.skin].gun_mirror_y!=undefined) {
+            gun.mirror.y = skins[players.skin].gun_mirror_y;
+        }else{
+            gun.mirror.y = true;
+        }
+        rotate1 = gun.mirror.y*Math.abs(rotate1);
     }
     GUI_render(map,scoreDeaths,boss)
     effects_draw(dark1, map.levels[random_level]);
@@ -258,11 +279,13 @@ export function draw() {
 //Создание и перезапуск уровня
 export function map_create(restart_level, death) {
     chancePlayerSpeed(3);
-    background(0);
-    player.removeAll();
+    players.removeAll();
     tiles.removeAll();
     objects.removeAll();
     boss_arm.removeAll();
+    setTimeout(() => {
+        background(0);
+    }, 50);
     if (map.levels.length == 0) {
         difficulty += 1;
         map = json[json.info[difficulty]][0];
@@ -300,16 +323,16 @@ export function map_create(restart_level, death) {
     if (map.levels[random_level] == map.levels[0]) {
         map.begin_level = false;
     }
-    player.rotationLock = map.levels[random_level].rotationLock;
+    players.rotationLock = map.levels[random_level].rotationLock;
     if (map.player_ball) {
-        player.diameter = 30;
+        players.diameter = 30;
     } else {
-        player.w = 38;
-        player.h = 38;
+        players.w = 38;
+        players.h = 38;
     }
     if (map.levels[random_level].win != undefined) {
         if (map.levels[random_level].win == "gun") {
-            win.text = skins[player.skin].gun;
+            win.text = skins[players.skin].gun;
             win.w = 10;
             win.h = 10;
             win.collider = "s";
@@ -320,7 +343,7 @@ export function map_create(restart_level, death) {
         }
     }else{
         if (map.win == "gun") {
-        win.text = skins[player.skin].gun;
+        win.text = skins[players.skin].gun;
         win.w = 10;
         win.h = 10;
         win.collider = "s";
@@ -348,28 +371,35 @@ export function map_create(restart_level, death) {
     }
     chanceColorTiles(map.levels[random_level]);
     boss_ready();
-    checkTiles(map.levels[random_level].map, death);
-    let player1 = new player.Sprite()
+    // checkTiles(map.levels[random_level].map, death);
+    if (spawns.length != 0) {
+        player = new players.Sprite()
+        console.log(player.emojis)
+    }else{
+        player = new players.Sprite()
+        player.visible = false
+        player.collider = 's'
+    }
     try {
         if (death == "fall") {
             if (map.fall_spawn && spawns.length != 0) {
-                player.x = spawns[getRandomInt(0, spawns.length)].x;
-                player.y = 0;
+                players.x = spawns[getRandomInt(0, spawns.length)].x;
+                players.y = 0;
             } else if (spawns.length == 0) {
-                player.y = 0;
+                players.y = 0;
                 player_spawn.active = true;
-                player_spawn.x = player[0].x;
-                player_spawn.y = player[0].y;
+                player_spawn.x = player.x;
+                player_spawn.y = player.y;
             } else {
-                player.y = 0;
+                players.y = 0;
             }
         } else {
-            player.x = spawns[getRandomInt(0, spawns.length)].x;
-            player.y = spawns[getRandomInt(0, spawns.length)].y;
+            players.x = spawns[getRandomInt(0, spawns.length)].x;
+            players.y = spawns[getRandomInt(0, spawns.length)].y;
         }
     } catch (error) {
-        player[0].x = player_spawn.x;
-        player[0].y = player_spawn.y;
+        player.x = player_spawn.x;
+        player.y = player_spawn.y;
     }
     gun.visible = map.gun_enable;
     if (map.levels[random_level].gun_enable != undefined) {
@@ -398,7 +428,7 @@ function checkTiles(tiles, death) {
         }
     }
     if (count == 0 && death != "fall" && !player_spawn.active) {
-        player[0].remove();
+        player.remove();
         console.log("%c💀Error spawn is not defined💀", "color: red; background-color: black");
         setInterval(() => {
             for (let i = 0; i < random(10, 100); i++) {

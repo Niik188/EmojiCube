@@ -1,4 +1,4 @@
 {
-    "images":["dark.png","win_block.png"],
+    "images":["background.png","win_block.png"],
     "sounds":["music/toby_fox_-_DELTARUNE_Chapter_2_-_BIG_SHOT_73283805.mp3","music/toby_fox_-_In_My_Way.mp3","music/Mus_waterquiet_OST.oga","music/Another_Medium.mp3","music/Field_of_hopes.oga","jump.mp3","win.mp3","win_gun.mp3","dead.mp3","fall.mp3","bullet.mp3","hit.mp3","hit_boss.mp3","invisible.mp3","boss_boom.mp3","jump_block.mp3","trap.mp3","laser.mp3"]
 }

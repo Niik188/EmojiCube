@@ -8,7 +8,7 @@ let effs
 export function effects_start(dark1,player) {
     effs = new Group()
     if (window_canvas.w>window_canvas.h) {
-        dark = createImage(canvas.w*4, canvas.h*5);
+        dark = createImage(canvas.w*3, canvas.h*4);
     }else{
         dark = createImage(canvas.w*4, canvas.h*8);
     }
@@ -22,6 +22,23 @@ export function effects_start(dark1,player) {
     dark.updatePixels();
     dark.mask(light)
     dark1.img = dark
+}
+
+function spotlight(x, y, radius){
+  beginShape();
+  fill(0);
+  vertex(0, 0);
+  vertex(width, 0);
+  vertex(width, height);
+  vertex(0, height);
+  
+  beginContour();
+  let numTimes = 360;
+  for(let i = 0; i < numTimes; i++){
+    vertex(x + radius * cos(TWO_PI*i/numTimes),y - radius * sin(TWO_PI* i/numTimes));
+  }
+  endContour();
+  endShape(CLOSE);
 }
 
 export function effects_draw(dark1,level,player) {

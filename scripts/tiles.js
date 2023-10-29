@@ -45,12 +45,13 @@ export let scoreDeaths = 0,
 const alphabetLang =
     "abcdefghijklmnopqrstuvwxyzйцукенгшщзхъфывапролджэячсмитьбюё";
 let alphabet = (alphabetLang + alphabetLang.toUpperCase()).split("");
-export let camera_object;
+export let camera_object = undefined;
 
 export function setup_tiles() {
     tiles = new Group();
     tiles.w = 50;
     tiles.h = 50;
+    tiles.ground = "jump"
 
     alphabet_letters = new tiles.Group();
     alphabet.forEach((letter) => {
@@ -86,6 +87,8 @@ export function setup_tiles() {
     objects = new Group();
     objects.w = 50;
     objects.h = 50;
+    objects.color = objects.stroke = "rgba(0,0,0,0)";
+    objects.ground = "jump"
 
     spawns = new tiles.Group();
     spawns.collider = "n";
@@ -131,6 +134,7 @@ export function setup_tiles() {
     wall.color = "rgb(155,155,155)";
     wall.stroke = "gray";
     wall.tile = "";
+    wall.ground = "none"
 
     jumping = new tiles.Group();
     jumping.collider = "s";
@@ -139,6 +143,7 @@ export function setup_tiles() {
     jumping.w = 45;
     jumping.h = 42;
     jumping.tile = "";
+    jumping.ground = "none"
 
     speedRight = new tiles.Group();
     speedRight.collider = "s";
@@ -246,40 +251,40 @@ export function setup_tiles() {
 
 //Движение роботов
 async function move_robot() {
-    await robots.moveTo(player[0].x - 10, player[0].y - 20, 2);
+    await robots.moveTo(player.x - 10, player.y - 20, 2);
     await delay(200);
-    await robots.moveTo(player[0].x, player[0].y, 2);
+    await robots.moveTo(player.x, player.y, 2);
     await delay(200);
     move_robot();
 }
 
 //Движение ультра-роботов
 async function move_ultra_robot() {
-    await robots.moveTo(player[0].x - 10, player[0].y, 2);
+    await robots.moveTo(player.x - 10, player.y, 2);
     await delay(200);
-    await robots.moveTo(player[0].x, player[0].y, 5);
+    await robots.moveTo(player.x, player.y, 5);
     await delay(500);
     move_robot();
 }
 
 //Движение летающих роботов
 async function move_robot_fly() {
-    await robots_fly.moveTo(player[0].x, player[0].y, 5);
+    await robots_fly.moveTo(player.x, player.y, 5);
     await delay(100);
     move_robot_fly();
 }
 
 //Движение летающих ультра-роботов
 async function move_ultra_robot_fly() {
-    await robots_fly.moveTo(player[0].x, player[0].y / 2, 3);
+    await robots_fly.moveTo(player.x, player.y / 2, 3);
     await delay(200);
-    await robots_fly.moveTo(player[0].x, player[0].y * 1.2, 10);
+    await robots_fly.moveTo(player.x, player.y * 1.2, 10);
     await delay(500);
     move_robot_fly();
 }
 
 export function tile_functional(player, map, json, difficulty, gun, bullets) {
-    player[0].collides(alphabet_letters, (player, letter) => {
+    player.collides(alphabet_letters, (player, letter) => {
         if (letter.type == "letter" && letter.collider == "static") {
             letter.health -= getRandomInt(0, 50);
         }
@@ -304,7 +309,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     //При косания игрока к выигрышу
-    if (player[0].collides(win) && !win_next) {
+    if (player.collides(win) && !win_next) {
         if (
             map.win == "none" ||
             (map.levels[number_level].win != undefined &&
@@ -322,11 +327,11 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             win.h = 50;
             win_next = slowmotion = false;
             map_create("none");
-            player[0].rotation = 0;
+            player.rotation = 0;
         } else {
-            player[0].text = player.emojis.win;
-            player[0].color = player.emojis.win_color;
-            player[0].death = false;
+            player.text = player.emojis.win;
+            player.color = player.emojis.win_color;
+            player.death = false;
             clearTimeout(timer1);
             win_next = slowmotion = true;
             if (map.levels[number_level].win != undefined) {
@@ -365,7 +370,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
                 win.h = 50;
                 win_next = slowmotion = false;
                 map_create("none");
-                player[0].rotation = 0;
+                player.rotation = 0;
             }, 1000);
         }
     }
@@ -376,35 +381,31 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     if (win_next) {
         if (json.info[difficulty] == "boss") {
             background(0, 0, 0, 255);
-            player[0].text = player.emojis.win_glitch;
-            player[0].color = player.emojis.win_color;
+            player.text = player.emojis.win_glitch;
+            player.color = player.emojis.win_color;
         } else {
             background(0, 255, 0, 10);
         }
     }
 
     //При косания игрока к шипам, летающим или просто роботов. При условии, что игрок не прошёл уровень
-    if ((player[0].collides(spikes) ||player[0].overlaps(lasers) ||player[0].collides(robots) ||player[0].collides(robots_fly)) &&player[0].visible &&!win_next) {
+    if ((player.collides(spikes) ||player.overlaps(lasers) ||player.collides(robots) ||player.collides(robots_fly)) &&player.visible &&!win_next) {
         LoadSoundplayer("/dead.");
         if (!map.random_level_after_die) {
             musicLevelStop();
         }
-        let skeleton = new objects.Sprite(player[0].x, player[0].y);
+        let skeleton = new objects.Sprite(player.x, player.y);
         skeleton.collider = "d";
-        skeleton.color = "white";
-        skeleton.stroke = "white";
         skeleton.textSize = 26;
         skeleton.text = player.emojis.death;
         skeleton.bounciness = 2;
-        skeleton.direction = -player[0].rotation;
-        skeleton.speed = Math.abs(player[0].velocity.x + player[0].velocity.y);
+        skeleton.direction = -player.rotation;
+        skeleton.speed = Math.abs(player.velocity.x + player.velocity.y);
         skeleton.layer = 1;
         skeleton.diameter = 20;
         camera_object = skeleton;
         let gun_weapon = new objects.Sprite(gun.x, gun.y);
         gun_weapon.collider = "d";
-        gun_weapon.color = "white";
-        gun_weapon.stroke = "white";
         gun_weapon.textSize = 32;
         gun_weapon.text = skins[player.skin].gun;
         gun_weapon.bounciness = 2;
@@ -417,22 +418,22 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         } else {
             gun_weapon.visible = map.gun_enable;
         }
-        player[0].collider = "n";
-        player[0].death = true;
-        player[0].visible = false;
+        player.collider = "n";
+        player.death = true;
+        player.visible = false;
         gun.visible = false;
         slowmotion = true;
         setTimeout(() => {
-            player[0].collider = "d";
-            player[0].death = false;
+            player.collider = "d";
+            player.death = false;
             camera_object = undefined;
             if (map.enable_scoreDeath) {
                 scoreDeaths++;
             } else if (map.enable_scoreDeath == undefined) {
                 scoreDeaths++;
             }
-            player[0].visible = true;
-            player[0].rotation = 0;
+            player.visible = true;
+            player.rotation = 0;
             slowmotion = false;
             if (map.random_level_after_die) {
                 map_create("none", "spike");
@@ -442,27 +443,23 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         }, 1500);
     }
 
-    if (player[0].collides(boss_arm)) {
+    if (player.collides(boss_arm)) {
         LoadSoundplayer("/dead.");
         if (!map.random_level_after_die) {
             musicLevelStop();
         }
-        let skeleton = new objects.Sprite(player[0].x, player[0].y);
+        let skeleton = new objects.Sprite(player.x, player.y);
         skeleton.collider = "d";
-        skeleton.color = "white";
-        skeleton.stroke = "white";
         skeleton.textSize = 26;
-        skeleton.text = "💀";
+        skeleton.text = player.emojis.death;
         skeleton.bounciness = 2;
-        skeleton.direction = -player[0].rotation;
-        skeleton.speed = Math.abs(player[0].velocity.x + player[0].velocity.y);
+        skeleton.direction = -player.rotation;
+        skeleton.speed = Math.abs(player.velocity.x + player.velocity.y);
         skeleton.layer = 1;
         skeleton.diameter = 20;
         camera_object = skeleton;
         let gun_weapon = new objects.Sprite(gun.x, gun.y);
         gun_weapon.collider = "d";
-        gun_weapon.color = "white";
-        gun_weapon.stroke = "white";
         gun_weapon.textSize = 32;
         gun_weapon.text = skins[player.skin].gun;
         gun_weapon.bounciness = 2;
@@ -478,16 +475,16 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         } else {
             gun_weapon.visible = map.gun_enable;
         }
-        player[0].collider = "n";
-        player[0].death = true;
-        player[0].visible = false;
+        player.collider = "n";
+        player.death = true;
+        player.visible = false;
         gun.visible = false;
         slowmotion = true;
         setTimeout(() => {
-        player[0].collider = "d";
-        player[0].death = false;
-        player[0].visible = true;
-        player[0].rotation = 0;
+        player.collider = "d";
+        player.death = false;
+        player.visible = true;
+        player.rotation = 0;
         slowmotion = false;
         camera_object = undefined;
         scoreDeaths++;
@@ -498,11 +495,11 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     //При падения игрока к границам canvas
     fall_barrier.forEach((element) => {
         fall_barrier_save = element;
-        if (player[0].y > element.y && !god_mode) {
+        if (player.y > element.y && !god_mode) {
             player.text = player.emojis.schock;
             player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
-            player[0].rotation = 0;
+            player.rotation = 0;
             if (map.next_level_after_fall && map.levels.length != 1) {
                 map.levels.splice(number_level, 1);
             }
@@ -517,14 +514,14 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     if (
-        player[0].y > fall_barrier_save.y &&
+        player.y > fall_barrier_save.y &&
         fall_barrier.length == 0 &&
         !god_mode
     ) {
         player.text = player.emojis.schock;
         player.color = player.emojis.schock_color;
         playerSetTextDefult(true);
-        player[0].rotation = 0;
+        player.rotation = 0;
         if (map.next_level_after_fall && map.levels.length != 1) {
             map.levels.splice(number_level, 1);
         }
@@ -546,7 +543,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     //При косания игрока к смертельному блок или при нажатии кнопки "/". При условии, что игрок не прошёл уровень
-    if ((player[0].colliding(die) || kb.presses("/")) && !win_next) {
+    if ((player.colliding(die) || kb.presses("/")) && !win_next) {
         LoadSoundplayer("/dead.");
         musicLevelLoad(json.song_die);
         textFont(font);
@@ -577,18 +574,18 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
         setTimeout(() => {
             location.reload();
         }, 50000);
-        player[0].text = " ";
+        player.text = " ";
         throw new SyntaxError("🤚😨✋");
     }
 
     //При косания игрока к прыгующему блоку
-    player[0].collides(jumping, (player1, jump) => {
+    player.collides(jumping, (player1, jump) => {
         if (player1.y + player1.h < jump.y) {
             LoadSoundplayer("/jump_block.");
             shakeCamera(200, 1);
-            player[0].vel.y = -10;
-            player[0].text = player[0].emojis.schock;
-            player[0].color = player[0].emojis.schock_color;
+            player.vel.y = -10;
+            player.text = player.emojis.schock;
+            player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
             jump.text = "⏫";
             setTimeout(() => {
@@ -596,24 +593,24 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
             }, 200);
         }
         if (player1.y > jump.y + jump.h) {
-            player[0].vel.y = 10;
+            player.vel.y = 10;
             LoadSoundplayer("/jump_block.");
             shakeCamera(200, 1);
         }
     });
 
     //При косания игрока к ускоренному вправо блоку
-    player[0].collides(speedRight, (player1, speed1) => {
-        if (player[0].x >= speed1.x) {
-            player[0].vel.x = 12;
+    player.collides(speedRight, (player1, speed1) => {
+        if (player.x >= speed1.x) {
+            player.vel.x = 12;
             LoadSoundplayer("/jump_block.");
             shakeCamera(200, 1);
-            player[0].text = player[0].emojis.schock;
-            player[0].color = player[0].emojis.schock_color;
+            player.text = player.emojis.schock;
+            player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
-            player[0].cooldown = true;
+            player.cooldown = true;
             setTimeout(() => {
-                player[0].cooldown = false;
+                player.cooldown = false;
             }, 1000);
             speed1.text = "⏩";
             setTimeout(() => {
@@ -623,17 +620,17 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     //При косания игрока к ускоренному влево блоку
-    player[0].collides(speedLeft, (player1, speed1) => {
-        if (player[0].x <= speed1.x) {
-            player[0].cooldown = true;
+    player.collides(speedLeft, (player1, speed1) => {
+        if (player.x <= speed1.x) {
+            player.cooldown = true;
             LoadSoundplayer("/jump_block.");
             shakeCamera(200, 1);
-            player[0].vel.x = -12;
-            player[0].text = player[0].emojis.schock;
-            player[0].color = player[0].emojis.schock_color;
+            player.vel.x = -12;
+            player.text = player.emojis.schock;
+            player.color = player.emojis.schock_color;
             playerSetTextDefult(true);
             setTimeout(() => {
-                player[0].cooldown = false;
+                player.cooldown = false;
             }, 1000);
             speed1.text = "⏪";
             setTimeout(() => {
@@ -643,7 +640,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     //При косания игрока к сломанному блоку
-    player[0].collides(fall, (player, fall) => {
+    player.collides(fall, (player, fall) => {
         if (fall.collider == "static") {
             setTimeout(() => {
                 LoadSoundplayer("/trap.");
@@ -655,7 +652,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     //При косания игрока к ловушке
-    player[0].collides(trap, (player, trap) => {
+    player.collides(trap, (player, trap) => {
         setTimeout(() => {
             LoadSoundplayer("/trap.");
             let spike_trap = new spikes.Sprite();
@@ -669,46 +666,46 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     robots.forEach((robot) => {
-        let distance = dist(player[0].x, player[0].y, robot.x, robot.y);
+        let distance = dist(player.x, player.y, robot.x, robot.y);
         if (distance < 70) {
-            player[0].text = player[0].emojis.unruhe[2];
-            player[0].color = player[0].emojis.unruhe_color[2];
+            player.text = player.emojis.unruhe[2];
+            player.color = player.emojis.unruhe_color[2];
         } else if (distance < 80) {
-            player[0].text = player[0].emojis.unruhe[1];
-            player[0].color = player[0].emojis.unruhe_color[1];
+            player.text = player.emojis.unruhe[1];
+            player.color = player.emojis.unruhe_color[1];
         } else if (distance < 150) {
-            player[0].text = player[0].emojis.unruhe[0];
-            player[0].color = player[0].emojis.unruhe_color[0];
+            player.text = player.emojis.unruhe[0];
+            player.color = player.emojis.unruhe_color[0];
         }
         playerSetTextDefult(true);
     });
 
     robots_fly.forEach((robot) => {
-        let distance = dist(player[0].x, player[0].y, robot.x, robot.y);
+        let distance = dist(player.x, player.y, robot.x, robot.y);
         if (distance < 70) {
-            player[0].text = player[0].emojis.unruhe[2];
-            player[0].color = player[0].emojis.unruhe_color[2];
+            player.text = player.emojis.unruhe[2];
+            player.color = player.emojis.unruhe_color[2];
         } else if (distance < 80) {
-            player[0].text = player[0].emojis.unruhe[1];
-            player[0].color = player[0].emojis.unruhe_color[1];
+            player.text = player.emojis.unruhe[1];
+            player.color = player.emojis.unruhe_color[1];
         } else if (distance < 150) {
-            player[0].text = player[0].emojis.unruhe[0];
-            player[0].color = player[0].emojis.unruhe_color[0];
+            player.text = player.emojis.unruhe[0];
+            player.color = player.emojis.unruhe_color[0];
         }
         playerSetTextDefult(true);
     });
 
     boss_arm.forEach((arm) => {
-        let distance = dist(player[0].x, player[0].y, arm.x, arm.y);
+        let distance = dist(player.x, player.y, arm.x, arm.y);
         if (distance < 70) {
-            player[0].text = player[0].emojis.unruhe[2];
-            player[0].color = player[0].emojis.unruhe_color[2];
+            player.text = player.emojis.unruhe[2];
+            player.color = player.emojis.unruhe_color[2];
         } else if (distance < 80) {
-            player[0].text = player[0].emojis.unruhe[1];
-            player[0].color = player[0].emojis.unruhe_color[1];
+            player.text = player.emojis.unruhe[1];
+            player.color = player.emojis.unruhe_color[1];
         } else if (distance < 150) {
-            player[0].text = player[0].emojis.unruhe[0];
-            player[0].color = player[0].emojis.unruhe_color[0];
+            player.text = player.emojis.unruhe[0];
+            player.color = player.emojis.unruhe_color[0];
         }
         playerSetTextDefult(true);
     });
@@ -731,7 +728,7 @@ export function tile_functional(player, map, json, difficulty, gun, bullets) {
     });
 
     cubes.forEach((cube) => {
-        let distance = dist(player[0].x, player[0].y, mouse.x, mouse.y);
+        let distance = dist(player.x, player.y, mouse.x, mouse.y);
         if (cube.mouse.pressing() && distance < 250) {
             cube.x = mouse.x;
             cube.y = mouse.y;
