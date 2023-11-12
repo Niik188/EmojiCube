@@ -1,4 +1,4 @@
-import { draw, preload, setup, windowResized } from './game.js';
+import { draw_game, preload_game, setup_game, windowResized_game } from './game.js';
 import { loadFiles } from './loadF.js';
 
 let buttons = []
@@ -8,20 +8,20 @@ let menu_objects;
 let scene;
 let font_menu;
 export let window_canvas = {w:4,h:3}
-export function setup_game() {
+export function game_load() {
     buttons.forEach(button => {
         button.elt.disabled = true
     });
     window.draw=()=>{return false;};
     window.windowResized=()=>{return false;}
-        preload()
+        preload_game()
         setTimeout(() => {
             buttons.forEach(button => {
                 button.remove()
             });
-            setup()
-            window.draw = draw;
-            window.windowResized = windowResized;
+            setup_game()
+            window.draw = draw_game;
+            window.windowResized = windowResized_game;
         }, 500);
 }
 
@@ -36,7 +36,7 @@ function setup_menu() {
     buttons[0] = createButton("New Game")
     buttons[0].position(canvas.w - 500, 350);
     buttons[0].size(240);
-    buttons[0].mousePressed(setup_game);
+    buttons[0].mousePressed(game_load);
     buttons[1] = createButton("Editor")
     buttons[1].position(canvas.w - 500, 400);
     buttons[1].size(240);

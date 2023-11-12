@@ -1,7 +1,6 @@
 import { shakeCamera } from "./camera.js";
 import { map_create, playerSetTextDefult } from "./game.js";
 import { LoadSoundplayer, sounds } from "./loadF.js";
-import { setup_game } from "./menu.js";
 import { jumping, objects, speedLeft, speedRight, spikes, tiles, wall } from "./tiles.js";
 export let god_mode = false;
 export let speedPlayer = 2

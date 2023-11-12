@@ -1,5 +1,5 @@
 {
-    "info":["extreme","tutorial","easy","normal","hard","boss","anomaly"],
+    "info":["tutorial","easy","normal","hard","extreme","boss","demo_ending"],
     "song_die":"toby_fox_-_In_My_Way",
     "tutorial":[{
         "title":"Tutorial",
@@ -13,7 +13,7 @@
         "random_level_after_die":false,
         "fall_spawn":true,
         "player_ball":false,
-        "gun_enable":true,
+        "gun_enable":false,
         "one_level":false,
         "levels":[{
             "tiles":{"block":"=","spawn":"{","win":"]","emoji":"~","fall_barrier":"0"},
@@ -344,6 +344,37 @@
                     "walls":"black"
             }}
         ]
+    }],
+    "demo_ending":[{
+        "title":"Final",
+        "song_main":"Another_Medium",
+        "tick": false,
+        "enable_scoreDeath": false,
+        "background": {"img":1,"tint":250,"light":true},
+        "light": true,
+        "win":"normal",
+        "random_level":false,
+        "random_level_after_die":false,
+        "fall_spawn":true,
+        "player_ball":true,
+        "gun_enable":false,
+        "one_level":true,
+        "levels":[{
+            "tiles":{"block":"=","spawn":"{","die_block":"!","emoji":"~","fall_barrier":"0"},
+            "effects":true,
+            "camera_position":"static",
+            "map":[
+                "!..............!",
+                "!.demo..ending.!",
+                "!.~..........~.!",
+                "!.....{{{......!",
+                "================",
+                "................",
+                "................",
+                "...............0"
+            ],
+            "emoji":["😕","😕"]
+        }]
     }],
     "anomaly":[{
         "title":"no data",

@@ -29,7 +29,7 @@ export let timer1;
 export let player
 
 //Запуск
-export function setup() {
+export function setup_game() {
     createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
     let random_count = getRandomInt(0, 10);
     if (random_count <= 3 && random_count >= 2) {document.title = "🥵EmojiCube😋"}
@@ -158,7 +158,7 @@ export function setup() {
 }
 
 //До загрузки
-export function preload() {
+export function preload_game() {
     json = loadJSON("./map.json");
     skins = loadJSON("./skins.json");
     //background(canvas.toDataURL())
@@ -168,7 +168,7 @@ export function preload() {
     
 }
 
-export function windowResized() {
+export function windowResized_game() {
     setTimeout(() => {
         createCanvas(`${window_canvas.w}:${window_canvas.h}`, "fullscreen");
         effects_start(dark1, player);
@@ -207,14 +207,18 @@ export function playerSetTextDefult(timer, win_glitch) {
 
 let rotate1 = 150;
 let timer_bullets;
-export function draw() {
+export function draw_game() {
     if (backgroundMap.img != undefined) {
         // imageMode(CORNERS);
         let dx = (mouseX/10)-20;
         let dy = (mouseY/10);
         tint(backgroundMap.tint)
         background(backgroundMap.tint);
-        image(images[backgroundMap.img - 1],(dx*0.05)-100,(dy*0.05)-100,canvas.w*1.2,canvas.h*1.2, 0, 0, images[backgroundMap.img - 1].width, images[backgroundMap.img - 1].height, CONTAIN)
+        if (map.levels[number_level].camera_position != "static") {
+            image(images[backgroundMap.img - 1],(dx*0.05)-100,(dy*0.05)-100,canvas.w*1.2,canvas.h*1.2, 0, 0, images[backgroundMap.img - 1].width, images[backgroundMap.img - 1].height, CONTAIN)
+        }else{
+            image(images[backgroundMap.img - 1],0,-80,canvas.w*1.2,canvas.h*1.2, 0, 0, images[backgroundMap.img - 1].width, images[backgroundMap.img - 1].height, CONTAIN)
+        }
         if (!backgroundMap.light) {
             bullets.stroke = bullets.color = skins[players.skin].color_bullets_light;
             gun.textColor = 'white'
@@ -273,7 +277,7 @@ export function draw() {
     GUI_render(map,scoreDeaths,boss)
     effects_draw(dark1, map.levels[random_level]);
     p5controls(player, map.levels[random_level]);
-    tile_functional(player, map, json, difficulty, gun, bullets, backgroundMap, spawns_activated);
+    tile_functional(players, map, json, difficulty, gun, bullets, backgroundMap, spawns_activated);
     cameraPosition(camera, player, map, canvas, number_level);
 }
 
@@ -377,9 +381,9 @@ export function map_create(restart_level, death) {
         player = new players.Sprite()
         console.log(player.emojis)
     }else{
-        player = new players.Sprite()
+        player = {x:0,y:0}
         player.visible = false
-        player.collider = 's'
+        player.collider = 'k'
     }
     try {
         if (death == "fall") {
